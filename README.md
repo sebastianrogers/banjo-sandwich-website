@@ -6,8 +6,16 @@ Official website for Banjo Sandwich, a bluegrass band featuring Julie, Rob, Sall
 
 To preview the website on your local machine:
 
+- Linux
+
 ```bash
 python3 -m http.server 8000
+```
+
+- Windows
+
+```ps
+py -m http.server 8000
 ```
 
 Then open your browser to http://localhost:8000
