@@ -1,0 +1,9 @@
+# GitHub Pages configuration for Banjo Sandwich website
+title: Banjo Sandwich
+description: Authentic Bluegrass Music with Heart and Soul
+baseurl: ""
+url: ""
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
