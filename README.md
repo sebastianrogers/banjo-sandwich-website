@@ -14,7 +14,7 @@ python3 -m http.server 8000
 
 - Windows
 
-```ps
+```ps1
 py -m http.server 8000
 ```
 
