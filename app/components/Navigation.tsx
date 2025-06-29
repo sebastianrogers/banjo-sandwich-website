@@ -5,7 +5,7 @@ export default function Navigation() {
     <header>
       <nav>
         <div className="logo">
-          <img src="/asset/Banjo Sandwich Logo Transparent.png" alt="Banjo Sandwich" className="logo-img" />
+          <img src="/asset/banjo_sandwich_logo_transparent.png" alt="Banjo Sandwich" className="logo-img" />
         </div>
         <ul className="nav-links">
           <li><Link to="/">Home</Link></li>

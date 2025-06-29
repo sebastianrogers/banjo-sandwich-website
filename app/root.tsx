@@ -16,7 +16,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Banjo Sandwich - Because One Banjo is Never Enough</title>
-        <link rel="icon" type="image/png" href="/asset/Banjo Sandwich Logo Transparent.png" />
+        <link rel="icon" type="image/png" href="/asset/banjo_sandwich_logo_transparent.png" />
         <link rel="stylesheet" href="/app/styles.css" />
         <Meta />
         <Links />
