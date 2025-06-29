@@ -135,6 +135,12 @@ main {
     text-align: center;
 }
 
+.hero-logo {
+    margin-top: 2rem;
+    max-width: 100%;
+    height: auto;
+}
+
 .hero-content h2 {
     font-size: 3rem;
     margin-bottom: 1rem;
