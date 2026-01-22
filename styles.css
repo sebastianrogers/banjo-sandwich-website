@@ -823,6 +823,10 @@ a {
   background: linear-gradient(to bottom, #5cb85c 0%, #449d44 50%, #398439 100%);
 }
 
+.fret.passing {
+  background: linear-gradient(to bottom, #ff9500 0%, #e67e22 50%, #c0711e 100%);
+}
+
 .note {
   font-size: 0.8rem;
   font-weight: bold;
@@ -891,6 +895,10 @@ a {
 
 .legend-dot.open {
   background: linear-gradient(to bottom, #5cb85c 0%, #398439 100%);
+}
+
+.legend-dot.passing {
+  background: linear-gradient(to bottom, #ff9500 0%, #c0711e 100%);
 }
 
 @media (max-width: 1024px) {
