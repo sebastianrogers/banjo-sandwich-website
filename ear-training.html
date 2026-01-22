@@ -1,12 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ear Training - Banjo Sandwich</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/tone"></script>
+    <script src="ear-training.js" defer></script>
+  </head>
+  <body class="ear-training-page">
     <header>
       <nav>
         <div class="logo">
@@ -17,9 +19,9 @@
           />
         </div>
         <ul class="nav-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#members">Members</a></li>
+          <li><a href="/#home">Home</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#members">Members</a></li>
           <li><a href="ear-training.html">Ear Training</a></li>
           <li><a href="#contact">Contact</a></li>
         </ul>
@@ -27,67 +29,236 @@
     </header>
 
     <main>
-        <section class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <h2>Ear Training</h2>
-                    <p>Develop your musical ear for banjo and bluegrass</p>
-                </div>
-            </div>
-        </section>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <h2>Ear Training</h2>
+            <p>Develop your musical ear for banjo and bluegrass</p>
+          </div>
+        </div>
+      </section>
 
-        <section class="events-section">
-            <div class="container">
-                <h2>Why Ear Training?</h2>
-                <div class="events-grid">
-                    <div class="event-card">
-                        <h3>Learn by Listening</h3>
-                        <p class="event-description">Ear training helps you learn songs faster by recognizing patterns and intervals in bluegrass music.</p>
-                    </div>
-                    
-                    <div class="event-card">
-                        <h3>Improve Your Playing</h3>
-                        <p class="event-description">Better ear training leads to better timing, pitch accuracy, and the ability to play with others.</p>
-                    </div>
-                    
-                    <div class="event-card">
-                        <h3>Play What You Hear</h3>
-                        <p class="event-description">Develop the ability to play songs you hear without sheet music or tabs.</p>
-                    </div>
+      <section class="events-section">
+        <div class="container">
+          <h2>Why Ear Training?</h2>
+          <div class="events-grid">
+            <div class="event-card">
+              <h3>Learn by Listening</h3>
+              <p class="event-description">
+                Ear training helps you learn songs faster by recognizing
+                patterns and intervals in bluegrass music.
+              </p>
+            </div>
+
+            <div class="event-card">
+              <h3>Improve Your Playing</h3>
+              <p class="event-description">
+                Better ear training leads to better timing, pitch accuracy, and
+                the ability to play with others.
+              </p>
+            </div>
+
+            <div class="event-card">
+              <h3>Play What You Hear</h3>
+              <p class="event-description">
+                Develop the ability to play songs you hear without sheet music
+                or tabs.
+              </p>
+            </div>
+          </div>
+
+          <h2>Exercises and Tips</h2>
+
+          <h3>Pentatonic Box Notes</h3>
+
+          <div class="pentatonic-training-container">
+            <div class="test-description">
+              <p>
+                This test helps you develop the ability to identify notes within
+                the pentatonic scale box pattern commonly used in banjo playing.
+                The pentatonic scale is fundamental to bluegrass and country
+                music, making it essential for banjo players to recognize these
+                notes by ear.
+              </p>
+
+              <h4>How to Use This Test:</h4>
+              <ul>
+                <li>
+                  <strong>Click "Play Note"</strong> to hear a random note from
+                  the pentatonic box
+                </li>
+                <li>
+                  <strong>Listen carefully</strong> and try to identify which
+                  note was played
+                </li>
+                <li>
+                  <strong>Click your guess</strong> from the available note
+                  buttons
+                </li>
+                <li>
+                  <strong>Get immediate feedback</strong> - green for correct,
+                  red for incorrect
+                </li>
+                <li>
+                  <strong>Track your progress</strong> with the accuracy
+                  percentage displayed
+                </li>
+              </ul>
+
+              <h4>Practice Tips:</h4>
+              <ul>
+                <li>
+                  Start by familiarizing yourself with the sound of each note
+                  individually
+                </li>
+                <li>
+                  Pay attention to the relative pitch relationships between
+                  notes
+                </li>
+                <li>
+                  Practice regularly in short sessions to build your ear
+                  gradually
+                </li>
+                <li>
+                  Use this alongside physical practice on your banjo for best
+                  results
+                </li>
+              </ul>
+            </div>
+
+            <div class="fretboard-container">
+              <h4>Pentatonic Scale on Banjo Fretboard</h4>
+              <div class="banjo-fretboard">
+                <!-- Fret numbers -->
+                <div class="fret-numbers">
+                  <span class="fret-number"></span>
+                  <span class="fret-number">Nut</span>
+                  <span class="fret-number">1</span>
+                  <span class="fret-number">2</span>
+                  <span class="fret-number">3</span>
+                  <span class="fret-number">4</span>
+                  <span class="fret-number">5</span>
                 </div>
 
-                <h2>Exercises and Tips</h2>
-                <div class="events-grid">
-                    <div class="event-card">
-                        <h3>Interval Recognition</h3>
-                        <p class="event-description">Practice identifying the distance between notes. Start with common bluegrass intervals like thirds and fifths.</p>
-                    </div>
-                    
-                    <div class="event-card">
-                        <h3>Rhythm Training</h3>
-                        <p class="event-description">Tap along to bluegrass songs and try to replicate the rhythmic patterns you hear.</p>
-                    </div>
-                    
-                    <div class="event-card">
-                        <h3>Active Listening</h3>
-                        <p class="event-description">Listen to recordings and try to pick out individual banjo parts, licks, and techniques.</p>
-                    </div>
+                <!-- String 1 (D) -->
+                <div class="string-row">
+                  <span class="string-label">D</span>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('D4')">
+                      D4
+                    </button>
+                  </div>
+                  <div class="fret"></div>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('E4')">
+                      E4
+                    </button>
+                  </div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
                 </div>
-            </div>
-        </section>
 
-        <section class="contact">
-            <div class="container">
-                <h2>Want to Learn More?</h2>
-                <p>Join us for practice sessions or reach out for tips on developing your banjo ear training skills.</p>
-                <div class="contact-info">
-                    <a href="mailto:info@banjosandwich.com" class="email-cta contrast-link">Contact Us</a>
+                <!-- String 2 (B) -->
+                <div class="string-row">
+                  <span class="string-label">B</span>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('B3')">
+                      B3
+                    </button>
+                  </div>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('C4')">
+                      C4
+                    </button>
+                  </div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
                 </div>
+
+                <!-- String 3 (G) -->
+                <div class="string-row">
+                  <span class="string-label">G</span>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('G3')">
+                      G3
+                    </button>
+                  </div>
+                  <div class="fret"></div>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('A3')">
+                      A3
+                    </button>
+                  </div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
+                </div>
+
+                <!-- String 4 (D) -->
+                <div class="string-row">
+                  <span class="string-label">D</span>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('D3')">
+                      D3
+                    </button>
+                  </div>
+                  <div class="fret"></div>
+                  <div class="fret pentatonic">
+                    <button class="note-btn" onclick="playNote('E3')">
+                      E3
+                    </button>
+                  </div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
+                  <div class="fret"></div>
+                </div>
+
+                <!-- String 5 (G) - 5th string (shorter) -->
+                <div class="string-row fifth-string">
+                  <span class="string-label">g</span>
+                  <div class="fret empty"></div>
+                  <div class="fret empty"></div>
+                  <div class="fret empty"></div>
+                  <div class="fret empty"></div>
+                  <div class="fret empty"></div>
+                  <div class="fret">
+                    <button class="note-btn" onclick="playNote('G4')">
+                      G4
+                    </button>
+                  </div>
+                </div>
+
+                <div class="legend">
+                  <span class="legend-item">
+                    <span class="legend-dot pentatonic"></span>
+                    Pentatonic Scale Notes
+                  </span>
+                </div>
+              </div>
             </div>
-        </section>
+          </div>
+
+          <button class="interval-btn" onclick="generateTwelveTests()">
+            Regenerate 12 Tests
+          </button>
+
+          <div class="overall-totals">
+            <span id="overall-totals"
+              >Total Correct: 0 | Total Incorrect: 0</span
+            >
+          </div>
+
+          <div id="tests-container" class="tests-container">
+            <!-- Tests will be generated here -->
+          </div>
+        </div>
+      </section>
     </main>
 
     <div id="footer-placeholder"></div>
     <script src="js/footer.js"></script>
-</body>
+  </body>
 </html>
