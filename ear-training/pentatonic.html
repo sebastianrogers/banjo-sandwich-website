@@ -1,32 +1,51 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-RLY5G4FXNC"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-RLY5G4FXNC");
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ear Training - Banjo Sandwich</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
+
     <script src="https://unpkg.com/tone"></script>
-    <script src="ear-training.js" defer></script>
+    <script src="/js/analytics.js"></script>
+
+    <script src="/js/ear-training.js" defer></script>
+
+    <script>
+      // Enhanced playNote function with fretboard tracking
+      function playNoteFromFretboard(note, string, fret) {
+        playNote(note);
+
+        // Track fretboard interactions
+        if (typeof gtag !== "undefined") {
+          gtag("event", "fretboard_note_play", {
+            event_category: "ear_training",
+            event_label: note,
+            string: string,
+            fret_position: fret,
+            custom_parameter_1: "fretboard_interaction",
+          });
+        }
+      }
+    </script>
   </head>
   <body class="ear-training-page">
-    <header>
-      <nav>
-        <div class="logo">
-          <img
-            src="asset/banjo_sandwich_logo_transparent.png"
-            alt="Banjo Sandwich"
-            class="logo-img"
-          />
-        </div>
-        <ul class="nav-links">
-          <li><a href="/#home">Home</a></li>
-          <li><a href="/#about">About</a></li>
-          <li><a href="/#members">Members</a></li>
-          <li><a href="ear-training.html">Ear Training</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
+    <div id="header-placeholder"></div>
+    <script src="/js/header.js"></script>
 
     <main>
       <section class="hero">
@@ -40,36 +59,7 @@
 
       <section class="events-section">
         <div class="container">
-          <h2>Why Ear Training?</h2>
-          <div class="events-grid">
-            <div class="event-card">
-              <h3>Learn by Listening</h3>
-              <p class="event-description">
-                Ear training helps you learn songs faster by recognizing
-                patterns and intervals in bluegrass music.
-              </p>
-            </div>
-
-            <div class="event-card">
-              <h3>Improve Your Playing</h3>
-              <p class="event-description">
-                Better ear training leads to better timing, pitch accuracy, and
-                the ability to play with others.
-              </p>
-            </div>
-
-            <div class="event-card">
-              <h3>Play What You Hear</h3>
-              <p class="event-description">
-                Develop the ability to play songs you hear without sheet music
-                or tabs.
-              </p>
-            </div>
-          </div>
-
-          <h2>Exercises and Tips</h2>
-
-          <h3>Pentatonic Box Notes</h3>
+          <h2>Pentatonic Box Notes</h2>
 
           <div class="pentatonic-training-container">
             <div class="test-description">
@@ -79,6 +69,15 @@
                 The pentatonic scale is fundamental to bluegrass and country
                 music, making it essential for banjo players to recognize these
                 notes by ear.
+              </p>
+
+              <p class="note-explanation">
+                <strong>Note:</strong> C4 is included in this exercise even
+                though it's not part of the G major pentatonic scale (G, A, B,
+                D, E). This note is commonly used as a passing tone in bluegrass
+                banjo playing and appears naturally on the 1st fret of the B
+                string in the standard pentatonic box pattern, making it
+                important for practical ear training.
               </p>
 
               <h4>How to Use This Test:</h4>
@@ -144,13 +143,19 @@
                 <div class="string-row">
                   <span class="string-label">D</span>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('D4')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('D4', 'D', 0)"
+                    >
                       D4
                     </button>
                   </div>
                   <div class="fret"></div>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('E4')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('E4', 'D', 2)"
+                    >
                       E4
                     </button>
                   </div>
@@ -163,12 +168,18 @@
                 <div class="string-row">
                   <span class="string-label">B</span>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('B3')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('B3', 'B', 0)"
+                    >
                       B3
                     </button>
                   </div>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('C4')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('C4', 'B', 1)"
+                    >
                       C4
                     </button>
                   </div>
@@ -182,13 +193,19 @@
                 <div class="string-row">
                   <span class="string-label">G</span>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('G3')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('G3', 'G', 0)"
+                    >
                       G3
                     </button>
                   </div>
                   <div class="fret"></div>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('A3')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('A3', 'G', 2)"
+                    >
                       A3
                     </button>
                   </div>
@@ -201,13 +218,19 @@
                 <div class="string-row">
                   <span class="string-label">D</span>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('D3')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('D3', 'D-low', 0)"
+                    >
                       D3
                     </button>
                   </div>
                   <div class="fret"></div>
                   <div class="fret pentatonic">
-                    <button class="note-btn" onclick="playNote('E3')">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('E3', 'D-low', 2)"
+                    >
                       E3
                     </button>
                   </div>

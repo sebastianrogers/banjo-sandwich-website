@@ -1,11 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-RLY5G4FXNC"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-RLY5G4FXNC");
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Banjo Sandwich - Because One Banjo is Never Enough</title>
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <script src="js/analytics.js"></script>
     <link
       rel="icon"
       type="image/png"
@@ -13,29 +31,17 @@
     />
   </head>
   <body>
-    <header>
-      <nav>
-        <div class="logo">
-          <img
-            src="asset/banjo_sandwich_logo_transparent.png"
-            alt="Banjo Sandwich"
-            class="logo-img"
-          />
-        </div>
-        <ul class="nav-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#members">Members</a></li>
-          <li><a href="ear-training.html">Ear Training</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
+    <div id="header-placeholder"></div>
+    <script src="js/header.js"></script>
 
     <main>
       <section id="home" class="hero">
         <div class="hero-content">
-          <img src="asset/banjo_sandwich_logo_text-removebg-preview.png" alt="Banjo Sandwich" class="hero-logo" />
+          <img
+            src="asset/banjo_sandwich_logo_text-removebg-preview.png"
+            alt="Banjo Sandwich"
+            class="hero-logo"
+          />
           <p>Because One Banjo is Never Enough</p>
           <div class="hero-description">
             <p>
@@ -118,31 +124,62 @@
         <div class="container">
           <h2>Get in Touch</h2>
           <p>
-            Its mighty lonely sitting on your own with a banjo practicing so do get in touch.  If you've seen us and you want to post pictures, audio or video then please do, and let us know so we can enjoy them to.
+            Its mighty lonely sitting on your own with a banjo practicing so do
+            get in touch. If you've seen us and you want to post pictures, audio
+            or video then please do, and let us know so we can enjoy them to.
           </p>
           <p>
-            Book Banjo Sandwich for your next event or festival, or private party. Yes you can.
+            Book Banjo Sandwich for your next event or festival, or private
+            party. Yes you can.
           </p>
           <div class="contact-info">
             <div class="primary-contact">
               <h4>Book Banjo Sandwich</h4>
-              <a href="mailto:bookings@banjo-sandwich.com" class="email-cta contrast-link">bookings@banjo-sandwich.com</a>
+              <a
+                href="mailto:bookings@banjo-sandwich.com"
+                class="email-cta contrast-link"
+                >bookings@banjo-sandwich.com</a
+              >
             </div>
-            
+
             <div class="contact-methods">
               <div class="contact-item">
                 <h4>Follow Us</h4>
                 <div class="social-links">
-                  <a href="https://www.facebook.com/groups/banjosandwich" class="social-link contrast-link" target="_blank" rel="noopener nofollow" title="Facebook">
+                  <a
+                    href="https://www.facebook.com/groups/banjosandwich"
+                    class="social-link contrast-link"
+                    target="_blank"
+                    rel="noopener nofollow"
+                    title="Facebook"
+                  >
                     <i class="fab fa-facebook-f" aria-hidden="true"></i>
                   </a>
-                  <a href="https://www.instagram.com/banjosandwichband" class="social-link contrast-link" target="_blank" rel="noopener nofollow" title="Instagram">
+                  <a
+                    href="https://www.instagram.com/banjosandwichband"
+                    class="social-link contrast-link"
+                    target="_blank"
+                    rel="noopener nofollow"
+                    title="Instagram"
+                  >
                     <i class="fab fa-instagram" aria-hidden="true"></i>
                   </a>
-                  <a href="https://www.youtube.com/@banjosandwichband" class="social-link contrast-link" target="_blank" rel="noopener nofollow" title="YouTube">
+                  <a
+                    href="https://www.youtube.com/@banjosandwichband"
+                    class="social-link contrast-link"
+                    target="_blank"
+                    rel="noopener nofollow"
+                    title="YouTube"
+                  >
                     <i class="fab fa-youtube" aria-hidden="true"></i>
                   </a>
-                  <a href="https://x.com/banjosandwich" class="social-link contrast-link" target="_blank" rel="noopener nofollow" title="X (formerly Twitter)">
+                  <a
+                    href="https://x.com/banjosandwich"
+                    class="social-link contrast-link"
+                    target="_blank"
+                    rel="noopener nofollow"
+                    title="X (formerly Twitter)"
+                  >
                     <i class="fab fa-x-twitter" aria-hidden="true"></i>
                   </a>
                 </div>

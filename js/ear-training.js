@@ -1,9 +1,15 @@
 let currentSynth = new Tone.Sampler({
   urls: {
     D3: "D3.mp3",
+    E3: "E3.mp3",
     G3: "G3.mp3",
+    A3: "A3.mp3",
+    B3: "B3.mp3",
+    C4: "C4.mp3",
+    D4: "D4.mp3",
+    E4: "E4.mp3",
   },
-  baseUrl: "banjo/",
+  baseUrl: "/banjo/",
 }).toDestination();
 
 // Define notes from D3 to C6
@@ -90,6 +96,15 @@ function generateTwelveTests() {
   overallCorrectGuesses = 0;
   overallIncorrectGuesses = 0;
 
+  // Track test generation in Analytics
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'ear_training_start', {
+      'event_category': 'ear_training',
+      'event_label': 'twelve_tests_generated',
+      'value': 12
+    });
+  }
+
   // Render the tests
   renderTests();
   updateOverallTotals();
@@ -155,6 +170,24 @@ function playTestNote(testIndex) {
     if (!test.buttonsEnabled) {
       test.buttonsEnabled = true;
       renderTests(); // Re-render to enable the buttons
+      
+      // Track first note play for this test
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'test_note_first_play', {
+          'event_category': 'ear_training',
+          'event_label': test.targetNote,
+          'test_number': testIndex + 1
+        });
+      }
+    } else {
+      // Track replay
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'test_note_replay', {
+          'event_category': 'ear_training',
+          'event_label': test.targetNote,
+          'test_number': testIndex + 1
+        });
+      }
     }
     playNote(test.targetNote);
   }
@@ -162,6 +195,15 @@ function playTestNote(testIndex) {
 
 function playNote(note) {
   currentSynth.triggerAttackRelease(note, "1n");
+  
+  // Track individual note plays
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'note_play', {
+      'event_category': 'ear_training',
+      'event_label': note,
+      'custom_parameter_1': 'individual_note'
+    });
+  }
 }
 
 function selectTestNote(testIndex, note) {
@@ -199,6 +241,17 @@ function selectTestNote(testIndex, note) {
       buttonElement.classList.add("btn-correct");
     }
     test.buttonFeedback[note] = "btn-correct";
+    
+    // Track correct guess
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'ear_training_correct', {
+        'event_category': 'ear_training',
+        'event_label': `${test.targetNote}_guessed_as_${note}`,
+        'test_number': testIndex + 1,
+        'guess_count': test.guessCount,
+        'value': 1
+      });
+    }
   } else {
     test.status = "incorrect";
     overallIncorrectGuesses++;
@@ -208,6 +261,17 @@ function selectTestNote(testIndex, note) {
       buttonElement.classList.add("btn-incorrect");
     }
     test.buttonFeedback[note] = "btn-incorrect";
+    
+    // Track incorrect guess
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'ear_training_incorrect', {
+        'event_category': 'ear_training',
+        'event_label': `${test.targetNote}_guessed_as_${note}`,
+        'test_number': testIndex + 1,
+        'guess_count': test.guessCount,
+        'value': 0
+      });
+    }
   }
 
   // Re-render the tests to update the UI
@@ -224,6 +288,32 @@ function updateOverallTotals() {
         ? Math.round((overallCorrectGuesses / totalGuesses) * 100)
         : 0;
     totalsElement.textContent = `Total Correct: ${overallCorrectGuesses} | Total Incorrect: ${overallIncorrectGuesses} | Accuracy: ${percentage}%`;
+    
+    // Check if all tests are completed
+    const completedTests = testCollection.filter(test => test.guessedCorrectly).length;
+    if (completedTests === testCollection.length && testCollection.length > 0) {
+      // Track session completion
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'ear_training_session_complete', {
+          'event_category': 'ear_training',
+          'event_label': 'all_tests_completed',
+          'total_guesses': totalGuesses,
+          'correct_guesses': overallCorrectGuesses,
+          'accuracy_percentage': percentage,
+          'value': percentage
+        });
+      }
+    }
+    
+    // Track progress milestones
+    if (completedTests === 6 && typeof gtag !== 'undefined') {
+      gtag('event', 'ear_training_milestone', {
+        'event_category': 'ear_training',
+        'event_label': 'halfway_complete',
+        'tests_completed': completedTests,
+        'accuracy_percentage': percentage
+      });
+    }
   }
 }
 

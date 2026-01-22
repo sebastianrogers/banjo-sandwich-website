@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-RLY5G4FXNC"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-RLY5G4FXNC");
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ear Training - Banjo Sandwich</title>
+    <link rel="stylesheet" href="/styles.css" />
+
+    <script src="https://unpkg.com/tone"></script>
+    <script src="/js/analytics.js"></script>
+
+    <script src="/js/ear-training.js" defer></script>
+
+    <script>
+      // Enhanced playNote function with fretboard tracking
+      function playNoteFromFretboard(note, string, fret) {
+        playNote(note);
+
+        // Track fretboard interactions
+        if (typeof gtag !== "undefined") {
+          gtag("event", "fretboard_note_play", {
+            event_category: "ear_training",
+            event_label: note,
+            string: string,
+            fret_position: fret,
+            custom_parameter_1: "fretboard_interaction",
+          });
+        }
+      }
+    </script>
+  </head>
+  <body class="ear-training-page">
+    <div id="header-placeholder"></div>
+    <script src="/js/header.js"></script>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <div class="hero-content">
+            <h2>Ear Training</h2>
+            <p>Develop your musical ear for banjo and bluegrass</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="events-section">
+        <div class="container">
+          <h2>Why Ear Training?</h2>
+          <div class="events-grid">
+            <div class="event-card">
+              <h3>Learn by Listening</h3>
+              <p class="event-description">
+                Ear training helps you learn songs faster by recognizing
+                patterns and intervals in bluegrass music.
+              </p>
+            </div>
+
+            <div class="event-card">
+              <h3>Improve Your Playing</h3>
+              <p class="event-description">
+                Better ear training leads to better timing, pitch accuracy, and
+                the ability to play with others.
+              </p>
+            </div>
+
+            <div class="event-card">
+              <h3>Play What You Hear</h3>
+              <p class="event-description">
+                Develop the ability to play songs you hear without sheet music
+                or tabs.
+              </p>
+            </div>
+          </div>
+
+          <h2>Exercises and Tips</h2>
+
+          <div class="exercises-grid">
+            <div class="exercise-card">
+              <h3>Pentatonic Scale Training</h3>
+              <p class="exercise-description">
+                Practice identifying notes within the pentatonic scale box
+                pattern - fundamental to bluegrass banjo playing.
+              </p>
+              <a href="/ear-training/pentatonic.html" class="exercise-link">
+                Start Pentatonic Training →
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script src="js/footer.js"></script>
+  </body>
+</html>
