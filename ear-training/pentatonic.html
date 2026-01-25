@@ -18,6 +18,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ear Training - Banjo Sandwich</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="stylesheet" href="/styles.css" />
 
     <script src="https://unpkg.com/tone"></script>
@@ -37,7 +39,7 @@
             event_label: note,
             string: string,
             fret_position: fret,
-            instrument: currentInstrument || 'synth', // Default to synth if not set yet
+            instrument: currentInstrument || "synth", // Default to synth if not set yet
             custom_parameter_1: "fretboard_interaction",
           });
         }
@@ -249,7 +251,10 @@
                   <div class="fret empty"></div>
                   <div class="fret empty"></div>
                   <div class="fret">
-                    <button class="note-btn" onclick="playNoteFromFretboard('G4', 'g', 5)">
+                    <button
+                      class="note-btn"
+                      onclick="playNoteFromFretboard('G4', 'g', 5)"
+                    >
                       G4
                     </button>
                   </div>
@@ -271,7 +276,10 @@
 
           <div class="instrument-selection">
             <label for="instrument-selector">Instrument:</label>
-            <select id="instrument-selector" onchange="setInstrument(this.value)">
+            <select
+              id="instrument-selector"
+              onchange="setInstrument(this.value)"
+            >
               <option value="banjo">Sebastian's Banjo</option>
               <option value="synth" selected>Synth</option>
             </select>
