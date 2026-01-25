@@ -1,4 +1,5 @@
-let currentSynth = new Tone.Sampler({
+// Initialize both instruments
+let banjoSampler = new Tone.Sampler({
   urls: {
     D3: "D3.mp3",
     E3: "E3.mp3",
@@ -11,6 +12,61 @@ let currentSynth = new Tone.Sampler({
   },
   baseUrl: "/banjo/",
 }).toDestination();
+
+let synthInstrument = new Tone.Synth({
+  oscillator: {
+    type: "triangle"
+  },
+  envelope: {
+    attack: 0.02,
+    decay: 0.3,
+    sustain: 0.3,
+    release: 0.8
+  }
+}).toDestination();
+
+// Current instrument selection
+let currentInstrument = 'synth'; // 'banjo' or 'synth'
+
+// Initialize instrument from URL parameter
+function initializeFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const instrumentParam = urlParams.get('instrument');
+  if (instrumentParam === 'synth' || instrumentParam === 'banjo') {
+    currentInstrument = instrumentParam;
+    updateInstrumentSelector();
+  }
+}
+
+// Update URL parameter when instrument changes
+function updateURLParameter(instrument) {
+  const url = new URL(window.location);
+  url.searchParams.set('instrument', instrument);
+  window.history.replaceState(null, '', url);
+}
+
+// Update the instrument selector UI
+function updateInstrumentSelector() {
+  const selector = document.getElementById('instrument-selector');
+  if (selector) {
+    selector.value = currentInstrument;
+  }
+}
+
+// Switch between instruments
+function setInstrument(instrument) {
+  currentInstrument = instrument;
+  updateURLParameter(instrument);
+  
+  // Track instrument change
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'instrument_change', {
+      'event_category': 'ear_training',
+      'event_label': instrument,
+      'custom_parameter_1': 'instrument_selection'
+    });
+  }
+}
 
 // Define notes from D3 to C6
 const fullRangeNoteCollection = [
@@ -194,13 +250,18 @@ function playTestNote(testIndex) {
 }
 
 function playNote(note) {
-  currentSynth.triggerAttackRelease(note, "1n");
+  if (currentInstrument === 'banjo') {
+    banjoSampler.triggerAttackRelease(note, "1n");
+  } else {
+    synthInstrument.triggerAttackRelease(note, "1n");
+  }
   
   // Track individual note plays
   if (typeof gtag !== 'undefined') {
     gtag('event', 'note_play', {
       'event_category': 'ear_training',
       'event_label': note,
+      'instrument': currentInstrument,
       'custom_parameter_1': 'individual_note'
     });
   }
@@ -319,5 +380,6 @@ function updateOverallTotals() {
 
 // Generate tests automatically when the page loads
 document.addEventListener("DOMContentLoaded", function () {
+  initializeFromURL();
   generateTwelveTests();
 });

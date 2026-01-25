@@ -148,7 +148,7 @@ main {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.hero-content > p {
+.hero-content>p {
   font-size: 1.5rem;
   margin-bottom: 2rem;
   font-style: italic;
@@ -661,6 +661,42 @@ footer {
   color: white !important;
 }
 
+.instrument-selection {
+  text-align: center;
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.instrument-selection label {
+  font-weight: bold;
+  color: #8b4513;
+  margin-right: 10px;
+}
+
+.instrument-selection select {
+  padding: 8px 12px;
+  border: 1px solid #8b4513;
+  border-radius: 4px;
+  background-color: white;
+  color: #8b4513;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.instrument-selection select:hover {
+  border-color: #5a2d0a;
+}
+
+.instrument-selection select:focus {
+  outline: none;
+  border-color: #5a2d0a;
+  box-shadow: 0 0 5px rgba(139, 69, 19, 0.3);
+}
+
 .overall-totals {
   text-align: center;
   margin: 20px 0;
@@ -680,7 +716,7 @@ footer {
     font-size: 2rem;
   }
 
-  .hero-content > p {
+  .hero-content>p {
     font-size: 1.2rem;
   }
 
@@ -838,6 +874,7 @@ a {
   min-width: 18px;
   text-align: center;
 }
+
 .note-btn {
   font-size: 0.8rem;
   font-weight: bold;
@@ -865,6 +902,7 @@ a {
   transform: translateY(0);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
+
 .legend {
   margin-top: 15px;
   display: flex;

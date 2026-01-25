@@ -37,6 +37,7 @@
             event_label: note,
             string: string,
             fret_position: fret,
+            instrument: currentInstrument || 'synth', // Default to synth if not set yet
             custom_parameter_1: "fretboard_interaction",
           });
         }
@@ -248,7 +249,7 @@
                   <div class="fret empty"></div>
                   <div class="fret empty"></div>
                   <div class="fret">
-                    <button class="note-btn" onclick="playNote('G4')">
+                    <button class="note-btn" onclick="playNoteFromFretboard('G4', 'g', 5)">
                       G4
                     </button>
                   </div>
@@ -266,6 +267,14 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <div class="instrument-selection">
+            <label for="instrument-selector">Instrument:</label>
+            <select id="instrument-selector" onchange="setInstrument(this.value)">
+              <option value="banjo">Sebastian's Banjo</option>
+              <option value="synth" selected>Synth</option>
+            </select>
           </div>
 
           <div class="overall-totals">
