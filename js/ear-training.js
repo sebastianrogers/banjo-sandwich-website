@@ -235,12 +235,22 @@ function generateTwelveTests() {
   // Clear existing tests
   testCollection = [];
 
+  let previousNote = null;
+
   // Generate 12 tests
   for (let i = 0; i < 12; i++) {
-    const randomNote =
-      pentatonicBoxNoteCollection[
-        Math.floor(Math.random() * pentatonicBoxNoteCollection.length)
-      ];
+    let randomNote;
+
+    // Ensure we don't get the same note as the previous one
+    do {
+      randomNote =
+        pentatonicBoxNoteCollection[
+          Math.floor(Math.random() * pentatonicBoxNoteCollection.length)
+        ];
+    } while (
+      randomNote === previousNote &&
+      pentatonicBoxNoteCollection.length > 1
+    );
 
     testCollection.push({
       id: i,
@@ -251,6 +261,9 @@ function generateTwelveTests() {
       buttonFeedback: {}, // Track button colors
       buttonsEnabled: false, // Track if note buttons should be enabled
     });
+
+    // Store this note as the previous note for the next iteration
+    previousNote = randomNote;
   }
 
   // Reset overall totals
