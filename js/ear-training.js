@@ -34,13 +34,13 @@ let currentCapoPosition = 0;
 // Initialize instrument from URL parameter
 function initializeFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
-  
+
   const instrumentParam = urlParams.get("instrument");
   if (instrumentParam === "synth" || instrumentParam === "banjo") {
     currentInstrument = instrumentParam;
     updateInstrumentSelector();
   }
-  
+
   const capoParam = urlParams.get("capo");
   if (capoParam && !isNaN(parseInt(capoParam))) {
     currentCapoPosition = parseInt(capoParam);
@@ -90,15 +90,15 @@ function setInstrument(instrument) {
 function setCapoPosition(capoFrets) {
   currentCapoPosition = capoFrets;
   updateURLParameter("capo", capoFrets);
-  
+
   // Update pentatonic collection based on capo
   updatePentatonicCollectionForCapo();
-  
+
   // Regenerate tests with new transposed notes
   generateTwelveTests();
 
   // Update fretboard display if function is available (from HTML page)
-  if (typeof updateFretboardDisplay === 'function') {
+  if (typeof updateFretboardDisplay === "function") {
     updateFretboardDisplay();
   }
 
@@ -170,44 +170,57 @@ let pentatonicBoxNoteCollection = [...basePentatonicBoxNoteCollection];
 // Function to transpose a note based on capo position
 function transposeNoteForCapo(note, capoFrets) {
   if (capoFrets === 0) return note;
-  
+
   // Extract note name and octave
   const noteRegex = /([A-G][#b]?)([0-9]+)/;
   const match = note.match(noteRegex);
   if (!match) return note;
-  
+
   const noteName = match[1];
   const octave = parseInt(match[2]);
-  
+
   // Chromatic scale
-  const chromaticScale = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-  
+  const chromaticScale = [
+    "C",
+    "C#",
+    "D",
+    "D#",
+    "E",
+    "F",
+    "F#",
+    "G",
+    "G#",
+    "A",
+    "A#",
+    "B",
+  ];
+
   // Find current note index
   let noteIndex = chromaticScale.indexOf(noteName);
   if (noteIndex === -1) {
     // Handle flat notes
-    const flatToSharp = {'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#'};
+    const flatToSharp = { Db: "C#", Eb: "D#", Gb: "F#", Ab: "G#", Bb: "A#" };
     noteIndex = chromaticScale.indexOf(flatToSharp[noteName] || noteName);
   }
-  
+
   if (noteIndex === -1) return note; // Fallback
-  
+
   // Calculate new note index
   const newNoteIndex = (noteIndex + capoFrets) % 12;
   let newOctave = octave;
-  
+
   // Check if we've crossed into the next octave
   if (noteIndex + capoFrets >= 12) {
     newOctave += Math.floor((noteIndex + capoFrets) / 12);
   }
-  
+
   return chromaticScale[newNoteIndex] + newOctave;
 }
 
 // Update pentatonic collection based on capo position
 function updatePentatonicCollectionForCapo() {
-  pentatonicBoxNoteCollection = basePentatonicBoxNoteCollection.map(note => 
-    transposeNoteForCapo(note, currentCapoPosition)
+  pentatonicBoxNoteCollection = basePentatonicBoxNoteCollection.map((note) =>
+    transposeNoteForCapo(note, currentCapoPosition),
   );
 }
 
@@ -477,10 +490,10 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeFromURL();
   updatePentatonicCollectionForCapo();
   generateTwelveTests();
-  
+
   // Update fretboard display if function is available (from HTML page)
   setTimeout(() => {
-    if (typeof updateFretboardDisplay === 'function') {
+    if (typeof updateFretboardDisplay === "function") {
       updateFretboardDisplay();
     }
   }, 200);
