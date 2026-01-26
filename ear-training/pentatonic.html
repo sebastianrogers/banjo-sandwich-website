@@ -28,15 +28,20 @@
     <script src="/js/ear-training.js" defer></script>
 
     <script>
-      // Enhanced playNote function with fretboard tracking
-      function playNoteFromFretboard(note, string, fret) {
-        playNote(note);
+      // Enhanced playNote function with fretboard tracking and capo support
+      function playNoteFromFretboard(baseNote, string, fret) {
+        // Calculate the actual note with capo (use currentCapoPosition from ear-training.js)
+        const actualCapoPosition = typeof currentCapoPosition !== 'undefined' ? currentCapoPosition : 0;
+        const actualNote = transposeNoteForCapo(baseNote, actualCapoPosition);
+        playNote(actualNote);
 
         // Track fretboard interactions
         if (typeof gtag !== "undefined") {
           gtag("event", "fretboard_note_play", {
             event_category: "ear_training",
-            event_label: note,
+            event_label: actualNote,
+            base_note: baseNote,
+            capo_position: actualCapoPosition,
             string: string,
             fret_position: fret,
             instrument: currentInstrument || "synth", // Default to synth if not set yet
@@ -44,6 +49,139 @@
           });
         }
       }
+
+      // Function to transpose a note based on capo position
+      function transposeNoteForCapo(note, capoFrets) {
+        if (capoFrets === 0) return note;
+        
+        // Extract note name and octave
+        const noteRegex = /([A-G][#b]?)([0-9]+)/;
+        const match = note.match(noteRegex);
+        if (!match) return note;
+        
+        const noteName = match[1];
+        const octave = parseInt(match[2]);
+        
+        // Chromatic scale
+        const chromaticScale = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        
+        // Find current note index
+        let noteIndex = chromaticScale.indexOf(noteName);
+        if (noteIndex === -1) {
+          // Handle flat notes
+          const flatToSharp = {'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#'};
+          noteIndex = chromaticScale.indexOf(flatToSharp[noteName] || noteName);
+        }
+        
+        if (noteIndex === -1) return note; // Fallback
+        
+        // Calculate new note index
+        const newNoteIndex = (noteIndex + capoFrets) % 12;
+        let newOctave = octave;
+        
+        // Check if we've crossed into the next octave
+        if (noteIndex + capoFrets >= 12) {
+          newOctave += Math.floor((noteIndex + capoFrets) / 12);
+        }
+        
+        return chromaticScale[newNoteIndex] + newOctave;
+      }
+
+      // Function to set capo position
+      function setCapoPosition(fretNumber) {
+        // Update both local and global capo position
+        if (typeof currentCapoPosition !== 'undefined') {
+          currentCapoPosition = fretNumber;
+        }
+        
+        updateFretboardDisplay();
+        
+        // Update the capo selector if called from elsewhere
+        const selector = document.getElementById("capo-selector");
+        if (selector && selector.value != fretNumber) {
+          selector.value = fretNumber;
+        }
+        
+        // Call the main setCapoPosition function if it exists
+        if (typeof window.setCapoPosition !== setCapoPosition && typeof window.setCapoPosition === 'function') {
+          window.setCapoPosition(fretNumber);
+        }
+        
+        // Track capo changes
+        if (typeof gtag !== "undefined") {
+          gtag("event", "capo_change", {
+            event_category: "ear_training",
+            event_label: `capo_fret_${fretNumber}`,
+            value: fretNumber,
+            custom_parameter_1: "capo_position",
+          });
+        }
+      }
+
+      // Function to update fretboard display with capo information
+      function updateFretboardDisplay() {
+        const actualCapoPosition = typeof currentCapoPosition !== 'undefined' ? currentCapoPosition : 0;
+        const noteButtons = document.querySelectorAll('.banjo-fretboard .note-btn');
+        
+        noteButtons.forEach(button => {
+          // Get the original note from data attribute
+          const baseNote = button.getAttribute('data-original-note');
+          
+          if (baseNote) {
+            // Calculate new note with capo
+            const newNote = transposeNoteForCapo(baseNote, actualCapoPosition);
+            
+            // Update button display
+            if (actualCapoPosition > 0) {
+              button.innerHTML = `${newNote}<br><small>(+${actualCapoPosition})</small>`;
+              button.classList.add('capo-active');
+            } else {
+              button.textContent = baseNote;
+              button.classList.remove('capo-active');
+            }
+          }
+        });
+        
+        // Update fret numbers to account for capo
+        const fretNumbers = document.querySelectorAll('.fret-number');
+        fretNumbers.forEach((fretSpan, index) => {
+          if (index === 0) return; // Skip the empty first span
+          
+          if (index === 1) {
+            // Nut position
+            if (actualCapoPosition > 0) {
+              fretSpan.textContent = `Capo`;
+            } else {
+              fretSpan.textContent = 'Nut';
+            }
+          } else {
+            // Numbered frets
+            const originalFret = index - 1; // Convert index to fret number
+            if (actualCapoPosition > 0) {
+              const adjustedFret = originalFret + actualCapoPosition;
+              fretSpan.textContent = adjustedFret.toString();
+            } else {
+              fretSpan.textContent = originalFret.toString();
+            }
+          }
+        });
+        
+        // Update fretboard header to show capo position
+        const fretboardContainer = document.querySelector('.fretboard-container h4');
+        if (fretboardContainer) {
+          if (actualCapoPosition > 0) {
+            fretboardContainer.textContent = `Pentatonic Scale on Banjo Fretboard (Capo ${actualCapoPosition})`;
+          } else {
+            fretboardContainer.textContent = 'Pentatonic Scale on Banjo Fretboard';
+          }
+        }
+      }
+
+      // Initialize fretboard display on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        // Small delay to ensure elements are rendered
+        setTimeout(updateFretboardDisplay, 100);
+      });
     </script>
   </head>
   <body class="ear-training-page">
@@ -148,6 +286,7 @@
                   <div class="fret pentatonic">
                     <button
                       class="note-btn"
+                      data-original-note="D4"
                       onclick="playNoteFromFretboard('D4', 'D', 0)"
                     >
                       D4
@@ -157,6 +296,7 @@
                   <div class="fret pentatonic">
                     <button
                       class="note-btn"
+                      data-original-note="E4"
                       onclick="playNoteFromFretboard('E4', 'D', 2)"
                     >
                       E4
@@ -173,6 +313,7 @@
                   <div class="fret pentatonic">
                     <button
                       class="note-btn"
+                      data-original-note="B3"
                       onclick="playNoteFromFretboard('B3', 'B', 0)"
                     >
                       B3
@@ -181,6 +322,7 @@
                   <div class="fret passing">
                     <button
                       class="note-btn"
+                      data-original-note="C4"
                       onclick="playNoteFromFretboard('C4', 'B', 1)"
                     >
                       C4
@@ -198,6 +340,7 @@
                   <div class="fret pentatonic">
                     <button
                       class="note-btn"
+                      data-original-note="G3"
                       onclick="playNoteFromFretboard('G3', 'G', 0)"
                     >
                       G3
@@ -207,6 +350,7 @@
                   <div class="fret pentatonic">
                     <button
                       class="note-btn"
+                      data-original-note="A3"
                       onclick="playNoteFromFretboard('A3', 'G', 2)"
                     >
                       A3
@@ -223,6 +367,7 @@
                   <div class="fret pentatonic">
                     <button
                       class="note-btn"
+                      data-original-note="D3"
                       onclick="playNoteFromFretboard('D3', 'D-low', 0)"
                     >
                       D3
@@ -232,6 +377,7 @@
                   <div class="fret pentatonic">
                     <button
                       class="note-btn"
+                      data-original-note="E3"
                       onclick="playNoteFromFretboard('E3', 'D-low', 2)"
                     >
                       E3
@@ -253,6 +399,7 @@
                   <div class="fret">
                     <button
                       class="note-btn"
+                      data-original-note="G4"
                       onclick="playNoteFromFretboard('G4', 'g', 5)"
                     >
                       G4
@@ -275,14 +422,33 @@
           </div>
 
           <div class="instrument-selection">
-            <label for="instrument-selector">Instrument:</label>
-            <select
-              id="instrument-selector"
-              onchange="setInstrument(this.value)"
-            >
-              <option value="banjo">Sebastian's Banjo</option>
-              <option value="synth" selected>Synth</option>
-            </select>
+            <div class="control-group">
+              <label for="instrument-selector">Instrument:</label>
+              <select
+                id="instrument-selector"
+                onchange="setInstrument(this.value)"
+              >
+                <option value="banjo">Sebastian's Banjo</option>
+                <option value="synth" selected>Synth</option>
+              </select>
+            </div>
+            
+            <div class="control-group">
+              <label for="capo-selector">Capo:</label>
+              <select
+                id="capo-selector"
+                onchange="setCapoPosition(parseInt(this.value))"
+              >
+                <option value="0" selected>No Capo</option>
+                <option value="1">1st Fret</option>
+                <option value="2">2nd Fret</option>
+                <option value="3">3rd Fret</option>
+                <option value="4">4th Fret</option>
+                <option value="5">5th Fret</option>
+                <option value="6">6th Fret</option>
+                <option value="7">7th Fret</option>
+              </select>
+            </div>
           </div>
 
           <div class="overall-totals">

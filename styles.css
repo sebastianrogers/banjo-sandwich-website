@@ -668,12 +668,23 @@ footer {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
 }
 
-.instrument-selection label {
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-group label {
   font-weight: bold;
   color: #8b4513;
-  margin-right: 10px;
+  margin: 0;
 }
 
 .instrument-selection select {
@@ -695,6 +706,23 @@ footer {
   outline: none;
   border-color: #5a2d0a;
   box-shadow: 0 0 5px rgba(139, 69, 19, 0.3);
+}
+
+.note-btn.capo-active {
+  border: 2px solid #b8860b;
+  font-weight: bold;
+}
+
+.note-btn.capo-active small {
+  color: #b8860b;
+  font-weight: normal;
+}
+
+@media (max-width: 768px) {
+  .instrument-selection {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
 
 .overall-totals {
