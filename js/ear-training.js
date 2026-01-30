@@ -369,7 +369,7 @@ function playTestNote(testIndex) {
 
 function playNote(note) {
   if (currentInstrument === "banjo") {
-    banjoSampler.triggerAttackRelease(note, "1n");
+    banjoSampler.triggerAttackRelease(note, "2n.");
   } else {
     synthInstrument.triggerAttackRelease(note, "1n");
   }

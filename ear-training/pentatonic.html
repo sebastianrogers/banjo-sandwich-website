@@ -30,11 +30,12 @@
     <script>
       // Enhanced playNote function with fretboard tracking and capo support
       function playNoteFromFretboard(baseNote, string, fret) {
-        // Calculate the actual note with capo (use currentCapoPosition from ear-training.js)
-        const actualCapoPosition =
-          typeof currentCapoPosition !== "undefined" ? currentCapoPosition : 0;
+        // Calculate the actual note with capo (use fretboard-specific capo position)
+        const actualCapoPosition = fretboardCapoPosition;
         const actualNote = transposeNoteForCapo(baseNote, actualCapoPosition);
-        playNote(actualNote);
+
+        // Use fretboard-specific instrument
+        playNoteWithInstrument(actualNote, fretboardInstrument);
 
         // Track fretboard interactions
         if (typeof gtag !== "undefined") {
@@ -45,8 +46,61 @@
             capo_position: actualCapoPosition,
             string: string,
             fret_position: fret,
-            instrument: currentInstrument || "synth", // Default to synth if not set yet
+            instrument: fretboardInstrument,
             custom_parameter_1: "fretboard_interaction",
+          });
+        }
+      }
+
+      // Separate instrument settings for fretboard
+      let fretboardInstrument = "synth";
+      let fretboardCapoPosition = 0;
+
+      // Function to play note with specific instrument
+      function playNoteWithInstrument(note, instrument) {
+        if (instrument === "banjo") {
+          if (typeof banjoSampler !== "undefined" && banjoSampler.loaded) {
+            banjoSampler.triggerAttackRelease(note, "2n.");
+          } else {
+            console.warn("Banjo sampler not loaded, falling back to synth");
+            if (typeof synthInstrument !== "undefined") {
+              synthInstrument.triggerAttackRelease(note, "8n");
+            }
+          }
+        } else {
+          // Default to synth
+          if (typeof synthInstrument !== "undefined") {
+            synthInstrument.triggerAttackRelease(note, "8n");
+          }
+        }
+      }
+
+      // Function to set fretboard instrument
+      function setFretboardInstrument(instrument) {
+        fretboardInstrument = instrument;
+
+        // Track instrument change for fretboard
+        if (typeof gtag !== "undefined") {
+          gtag("event", "fretboard_instrument_change", {
+            event_category: "ear_training",
+            event_label: instrument,
+            custom_parameter_1: "fretboard_instrument_selection",
+          });
+        }
+      }
+
+      // Function to set fretboard capo position
+      function setFretboardCapoPosition(fretNumber) {
+        fretboardCapoPosition = fretNumber;
+        updateFretboardDisplay();
+
+        // Track capo changes for fretboard
+        if (typeof gtag !== "undefined") {
+          gtag("event", "fretboard_capo_change", {
+            event_category: "ear_training",
+            event_label: `capo_fret_${fretNumber}`,
+            value: fretNumber,
+            custom_parameter_1: "fretboard_capo_position",
           });
         }
       }
@@ -107,16 +161,15 @@
         return chromaticScale[newNoteIndex] + newOctave;
       }
 
-      // Function to set capo position
+      // Function to set capo position (for backward compatibility)
       function setCapoPosition(fretNumber) {
-        // Update both local and global capo position
+        // This function exists for backward compatibility but now only affects main ear training
+        // Update both local and global capo position for main ear training
         if (typeof currentCapoPosition !== "undefined") {
           currentCapoPosition = fretNumber;
         }
 
-        updateFretboardDisplay();
-
-        // Update the capo selector if called from elsewhere
+        // Update the main capo selector if called from elsewhere
         const selector = document.getElementById("capo-selector");
         if (selector && selector.value != fretNumber) {
           selector.value = fretNumber;
@@ -130,7 +183,7 @@
           window.setCapoPosition(fretNumber);
         }
 
-        // Track capo changes
+        // Track capo changes for main ear training
         if (typeof gtag !== "undefined") {
           gtag("event", "capo_change", {
             event_category: "ear_training",
@@ -141,10 +194,9 @@
         }
       }
 
-      // Function to update fretboard display with capo information
+      // Function to update fretboard display with fretboard-specific capo information
       function updateFretboardDisplay() {
-        const actualCapoPosition =
-          typeof currentCapoPosition !== "undefined" ? currentCapoPosition : 0;
+        const actualCapoPosition = fretboardCapoPosition;
         const noteButtons = document.querySelectorAll(
           ".banjo-fretboard .note-btn",
         );
@@ -195,6 +247,7 @@
         // Update fretboard header to show capo position
         const fretboardContainer = document.querySelector(
           ".fretboard-container h4",
+          fretboard - specific,
         );
         if (fretboardContainer) {
           if (actualCapoPosition > 0) {
@@ -292,11 +345,50 @@
                   Use this alongside physical practice on your banjo for best
                   results
                 </li>
+                <li>
+                  <strong>Don't have a banjo with you just now?</strong> Mix instruments for
+                  practice: set the fretboard to "banjo" and the test to "synth"
+                  to hear realistic banjo tones while testing with clean
+                  synthetic notes, or vice versa to challenge your ear with
+                  different timbres
+                </li>
               </ul>
             </div>
 
             <div class="fretboard-container">
               <h4>Pentatonic Scale on Banjo Fretboard</h4>
+
+              <!-- Separate instrument control for fretboard -->
+              <div class="fretboard-instrument-selection">
+                <div class="control-group">
+                  <label for="fretboard-instrument-selector"
+                    >Fretboard Sound:</label
+                  >
+                  <select
+                    id="fretboard-instrument-selector"
+                    onchange="setFretboardInstrument(this.value)"
+                  >
+                    <option value="banjo">Sebastian's Banjo</option>
+                    <option value="synth" selected>Synth</option>
+                  </select>
+                </div>
+
+                <div class="control-group">
+                  <label for="fretboard-capo-selector">Capo:</label>
+                  <select
+                    id="fretboard-capo-selector"
+                    onchange="setFretboardCapoPosition(parseInt(this.value))"
+                  >
+                    <option value="0" selected>No Capo</option>
+                    <option value="1">1st Fret</option>
+                    <option value="2">2nd Fret</option>
+                    <option value="3">3rd Fret</option>
+                    <option value="4">4th Fret</option>
+                    <option value="5">5th Fret</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="banjo-fretboard">
                 <!-- Fret numbers -->
                 <div class="fret-numbers">
