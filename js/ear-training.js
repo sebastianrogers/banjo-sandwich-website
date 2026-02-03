@@ -593,8 +593,8 @@ function playTestNote(testIndex) {
     }
 
     if (useReferenceNote) {
-      // Play reference note first
-      playNote(currentReferenceNote);
+      // Play reference note first (shorter duration)
+      playReferenceNote(currentReferenceNote);
 
       // Track reference note plays
       if (typeof gtag !== "undefined") {
@@ -609,7 +609,7 @@ function playTestNote(testIndex) {
       // Play the test note after a short delay
       setTimeout(() => {
         playNote(test.targetNote);
-      }, 1200); // 1.2 second delay
+      }, 600); // 0.6 second delay
     } else {
       // Play test note immediately if no reference
       playNote(test.targetNote);
@@ -631,6 +631,24 @@ function playNote(note) {
       event_label: note,
       instrument: currentInstrument,
       custom_parameter_1: "individual_note",
+    });
+  }
+}
+
+function playReferenceNote(note) {
+  if (currentInstrument === "banjo") {
+    banjoSampler.triggerAttackRelease(note, "4n"); // Quarter note - much shorter
+  } else {
+    synthInstrument.triggerAttackRelease(note, "4n"); // Quarter note - much shorter
+  }
+
+  // Track reference note plays
+  if (typeof gtag !== "undefined") {
+    gtag("event", "note_play", {
+      event_category: "ear_training",
+      event_label: note,
+      instrument: currentInstrument,
+      custom_parameter_1: "reference_note",
     });
   }
 }
