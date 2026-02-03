@@ -64,13 +64,13 @@
           } else {
             console.warn("Banjo sampler not loaded, falling back to synth");
             if (typeof synthInstrument !== "undefined") {
-              synthInstrument.triggerAttackRelease(note, "8n");
+              synthInstrument.triggerAttackRelease(note, "1n");
             }
           }
         } else {
           // Default to synth
           if (typeof synthInstrument !== "undefined") {
-            synthInstrument.triggerAttackRelease(note, "8n");
+            synthInstrument.triggerAttackRelease(note, "1n");
           }
         }
       }
@@ -263,7 +263,65 @@
       document.addEventListener("DOMContentLoaded", function () {
         // Small delay to ensure elements are rendered
         setTimeout(updateFretboardDisplay, 100);
+        // Initialize instructions state from URL
+        initializeInstructionsFromURL();
       });
+
+      // Initialize instructions state from URL parameter
+      function initializeInstructionsFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const instructionsParam = urlParams.get("instructions");
+
+        // Default to showing instructions if no parameter is set
+        const showInstructions = instructionsParam !== "false";
+
+        const checkbox = document.getElementById("show-instructions-toggle");
+        if (checkbox) {
+          checkbox.checked = showInstructions;
+          toggleDescription(showInstructions);
+        }
+      }
+
+      // Update URL parameter when instructions toggle changes
+      function updateInstructionsURLParameter(value) {
+        const url = new URL(window.location);
+        if (value) {
+          url.searchParams.delete("instructions"); // Remove param when showing (default state)
+        } else {
+          url.searchParams.set("instructions", "false");
+        }
+        window.history.replaceState(null, "", url);
+      }
+
+      // Toggle description visibility
+      function toggleDescription(isChecked) {
+        const container = document.querySelector(
+          ".pentatonic-training-container",
+        );
+        const label = document.querySelector(
+          'label[for="show-instructions-toggle"].checkbox-label',
+        );
+
+        if (isChecked) {
+          container.style.display = "block";
+          label.textContent = "Show";
+        } else {
+          container.style.display = "none";
+          label.textContent = "Show";
+        }
+
+        // Update URL parameter
+        updateInstructionsURLParameter(isChecked);
+
+        // Track toggle usage
+        if (typeof gtag !== "undefined") {
+          gtag("event", "description_toggle", {
+            event_category: "ear_training",
+            event_label: isChecked ? "shown" : "hidden",
+            custom_parameter_1: "description_visibility",
+          });
+        }
+      }
     </script>
   </head>
   <body class="ear-training-page">
@@ -282,8 +340,6 @@
 
       <section class="events-section">
         <div class="container">
-          <h2>Pentatonic Box Notes</h2>
-
           <div class="pentatonic-training-container">
             <div class="test-description">
               <p>
@@ -346,199 +402,38 @@
                   results
                 </li>
                 <li>
-                  <strong>Don't have a banjo with you just now?</strong> Mix instruments for
-                  practice: set the fretboard to "banjo" and the test to "synth"
-                  to hear realistic banjo tones while testing with clean
-                  synthetic notes, or vice versa to challenge your ear with
-                  different timbres
+                  <strong>Don't have a banjo with you just now?</strong> Mix
+                  instruments for practice: set the fretboard to "banjo" and the
+                  test to "synth" to hear realistic banjo tones while testing
+                  with clean synthetic notes, or vice versa to challenge your
+                  ear with different timbres
                 </li>
               </ul>
-            </div>
 
-            <div class="fretboard-container">
-              <h4>Pentatonic Scale on Banjo Fretboard</h4>
-
-              <!-- Separate instrument control for fretboard -->
-              <div class="fretboard-instrument-selection">
-                <div class="control-group">
-                  <label for="fretboard-instrument-selector"
-                    >Fretboard Sound:</label
-                  >
-                  <select
-                    id="fretboard-instrument-selector"
-                    onchange="setFretboardInstrument(this.value)"
-                  >
-                    <option value="banjo">Sebastian's Banjo</option>
-                    <option value="synth" selected>Synth</option>
-                  </select>
-                </div>
-
-                <div class="control-group">
-                  <label for="fretboard-capo-selector">Capo:</label>
-                  <select
-                    id="fretboard-capo-selector"
-                    onchange="setFretboardCapoPosition(parseInt(this.value))"
-                  >
-                    <option value="0" selected>No Capo</option>
-                    <option value="1">1st Fret</option>
-                    <option value="2">2nd Fret</option>
-                    <option value="3">3rd Fret</option>
-                    <option value="4">4th Fret</option>
-                    <option value="5">5th Fret</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="banjo-fretboard">
-                <!-- Fret numbers -->
-                <div class="fret-numbers">
-                  <span class="fret-number"></span>
-                  <span class="fret-number">Nut</span>
-                  <span class="fret-number">1</span>
-                  <span class="fret-number">2</span>
-                  <span class="fret-number">3</span>
-                  <span class="fret-number">4</span>
-                  <span class="fret-number">5</span>
-                </div>
-
-                <!-- String 1 (D) -->
-                <div class="string-row">
-                  <span class="string-label">D</span>
-                  <div class="fret pentatonic">
-                    <button
-                      class="note-btn"
-                      data-original-note="D4"
-                      onclick="playNoteFromFretboard('D4', 'D', 0)"
-                    >
-                      D4
-                    </button>
-                  </div>
-                  <div class="fret"></div>
-                  <div class="fret pentatonic">
-                    <button
-                      class="note-btn"
-                      data-original-note="E4"
-                      onclick="playNoteFromFretboard('E4', 'D', 2)"
-                    >
-                      E4
-                    </button>
-                  </div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                </div>
-
-                <!-- String 2 (B) -->
-                <div class="string-row">
-                  <span class="string-label">B</span>
-                  <div class="fret pentatonic">
-                    <button
-                      class="note-btn"
-                      data-original-note="B3"
-                      onclick="playNoteFromFretboard('B3', 'B', 0)"
-                    >
-                      B3
-                    </button>
-                  </div>
-                  <div class="fret passing">
-                    <button
-                      class="note-btn"
-                      data-original-note="C4"
-                      onclick="playNoteFromFretboard('C4', 'B', 1)"
-                    >
-                      C4
-                    </button>
-                  </div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                </div>
-
-                <!-- String 3 (G) -->
-                <div class="string-row">
-                  <span class="string-label">G</span>
-                  <div class="fret pentatonic">
-                    <button
-                      class="note-btn"
-                      data-original-note="G3"
-                      onclick="playNoteFromFretboard('G3', 'G', 0)"
-                    >
-                      G3
-                    </button>
-                  </div>
-                  <div class="fret"></div>
-                  <div class="fret pentatonic">
-                    <button
-                      class="note-btn"
-                      data-original-note="A3"
-                      onclick="playNoteFromFretboard('A3', 'G', 2)"
-                    >
-                      A3
-                    </button>
-                  </div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                </div>
-
-                <!-- String 4 (D) -->
-                <div class="string-row">
-                  <span class="string-label">D</span>
-                  <div class="fret pentatonic">
-                    <button
-                      class="note-btn"
-                      data-original-note="D3"
-                      onclick="playNoteFromFretboard('D3', 'D-low', 0)"
-                    >
-                      D3
-                    </button>
-                  </div>
-                  <div class="fret"></div>
-                  <div class="fret pentatonic">
-                    <button
-                      class="note-btn"
-                      data-original-note="E3"
-                      onclick="playNoteFromFretboard('E3', 'D-low', 2)"
-                    >
-                      E3
-                    </button>
-                  </div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                  <div class="fret"></div>
-                </div>
-
-                <!-- String 5 (G) - 5th string (shorter) -->
-                <div class="string-row fifth-string">
-                  <span class="string-label">g</span>
-                  <div class="fret empty"></div>
-                  <div class="fret empty"></div>
-                  <div class="fret empty"></div>
-                  <div class="fret empty"></div>
-                  <div class="fret empty"></div>
-                  <div class="fret">
-                    <button
-                      class="note-btn"
-                      data-original-note="G4"
-                      onclick="playNoteFromFretboard('G4', 'g', 5)"
-                    >
-                      G4
-                    </button>
-                  </div>
-                </div>
-
-                <div class="legend">
-                  <span class="legend-item">
-                    <span class="legend-dot pentatonic"></span>
-                    Pentatonic Scale Notes
-                  </span>
-                  <span class="legend-item">
-                    <span class="legend-dot passing"></span>
-                    Passing Tone
-                  </span>
-                </div>
-              </div>
+              <h4>Reference Note Feature</h4>
+              <p>
+                When enabled, each test will automatically play the root note
+                (G) first, followed by the test note. This helps develop
+                <strong>relative pitch</strong> skills by giving you a reference
+                point within the key.
+              </p>
+              <ul>
+                <li>
+                  <strong>With Reference Note:</strong> Tests relative pitch -
+                  your ability to identify scale degrees and intervals within a
+                  musical context
+                </li>
+                <li>
+                  <strong>Without Reference Note:</strong> Tests absolute pitch
+                  - your ability to identify specific pitches without a
+                  reference
+                </li>
+              </ul>
+              <p>
+                <em>Tip:</em> Start with the reference note enabled to learn the
+                relationships between notes, then try disabling it to challenge
+                your absolute pitch recognition.
+              </p>
             </div>
           </div>
 
@@ -568,6 +463,34 @@
                 <option value="5">5th Fret</option>
               </select>
             </div>
+
+            <div class="control-group">
+              <label for="reference-note-toggle">Reference Note:</label>
+              <input
+                type="checkbox"
+                id="reference-note-toggle"
+                checked
+                onchange="toggleReferenceNote(this.checked)"
+                title="Play a reference note (root of the scale) before each test note"
+              />
+              <label for="reference-note-toggle" class="checkbox-label"
+                >Enable</label
+              >
+            </div>
+
+            <div class="control-group">
+              <label for="show-instructions-toggle">Instructions:</label>
+              <input
+                type="checkbox"
+                id="show-instructions-toggle"
+                checked
+                onchange="toggleDescription(this.checked)"
+                title="Show or hide detailed instructions"
+              />
+              <label for="show-instructions-toggle" class="checkbox-label"
+                >Show</label
+              >
+            </div>
           </div>
 
           <div class="overall-totals">
@@ -578,6 +501,192 @@
 
           <div id="tests-container" class="tests-container">
             <!-- Tests will be generated here -->
+          </div>
+
+          <div class="fretboard-container">
+            <h4>Pentatonic Scale on Banjo Fretboard</h4>
+
+            <!-- Separate instrument control for fretboard -->
+            <div class="fretboard-instrument-selection">
+              <div class="control-group">
+                <label for="fretboard-instrument-selector"
+                  >Fretboard Sound:</label
+                >
+                <select
+                  id="fretboard-instrument-selector"
+                  onchange="setFretboardInstrument(this.value)"
+                >
+                  <option value="banjo">Sebastian's Banjo</option>
+                  <option value="synth" selected>Synth</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="fretboard-capo-selector">Capo:</label>
+                <select
+                  id="fretboard-capo-selector"
+                  onchange="setFretboardCapoPosition(parseInt(this.value))"
+                >
+                  <option value="0" selected>No Capo</option>
+                  <option value="1">1st Fret</option>
+                  <option value="2">2nd Fret</option>
+                  <option value="3">3rd Fret</option>
+                  <option value="4">4th Fret</option>
+                  <option value="5">5th Fret</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="banjo-fretboard">
+              <!-- Fret numbers -->
+              <div class="fret-numbers">
+                <span class="fret-number"></span>
+                <span class="fret-number">Nut</span>
+                <span class="fret-number">1</span>
+                <span class="fret-number">2</span>
+                <span class="fret-number">3</span>
+                <span class="fret-number">4</span>
+                <span class="fret-number">5</span>
+              </div>
+
+              <!-- String 1 (D) -->
+              <div class="string-row">
+                <span class="string-label">D</span>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="D4"
+                    onclick="playNoteFromFretboard('D4', 'D', 0)"
+                  >
+                    D4
+                  </button>
+                </div>
+                <div class="fret"></div>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="E4"
+                    onclick="playNoteFromFretboard('E4', 'D', 2)"
+                  >
+                    E4
+                  </button>
+                </div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+              </div>
+
+              <!-- String 2 (B) -->
+              <div class="string-row">
+                <span class="string-label">B</span>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="B3"
+                    onclick="playNoteFromFretboard('B3', 'B', 0)"
+                  >
+                    B3
+                  </button>
+                </div>
+                <div class="fret passing">
+                  <button
+                    class="note-btn"
+                    data-original-note="C4"
+                    onclick="playNoteFromFretboard('C4', 'B', 1)"
+                  >
+                    C4
+                  </button>
+                </div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+              </div>
+
+              <!-- String 3 (G) -->
+              <div class="string-row">
+                <span class="string-label">G</span>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="G3"
+                    onclick="playNoteFromFretboard('G3', 'G', 0)"
+                  >
+                    G3
+                  </button>
+                </div>
+                <div class="fret"></div>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="A3"
+                    onclick="playNoteFromFretboard('A3', 'G', 2)"
+                  >
+                    A3
+                  </button>
+                </div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+              </div>
+
+              <!-- String 4 (D) -->
+              <div class="string-row">
+                <span class="string-label">D</span>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="D3"
+                    onclick="playNoteFromFretboard('D3', 'D-low', 0)"
+                  >
+                    D3
+                  </button>
+                </div>
+                <div class="fret"></div>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="E3"
+                    onclick="playNoteFromFretboard('E3', 'D-low', 2)"
+                  >
+                    E3
+                  </button>
+                </div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+                <div class="fret"></div>
+              </div>
+
+              <!-- String 5 (G) - 5th string (shorter) -->
+              <div class="string-row fifth-string">
+                <span class="string-label">g</span>
+                <div class="fret empty"></div>
+                <div class="fret empty"></div>
+                <div class="fret empty"></div>
+                <div class="fret empty"></div>
+                <div class="fret empty"></div>
+                <div class="fret">
+                  <button
+                    class="note-btn"
+                    data-original-note="G4"
+                    onclick="playNoteFromFretboard('G4', 'g', 5)"
+                  >
+                    G4
+                  </button>
+                </div>
+              </div>
+
+              <div class="legend">
+                <span class="legend-item">
+                  <span class="legend-dot pentatonic"></span>
+                  Pentatonic Scale Notes
+                </span>
+                <span class="legend-item">
+                  <span class="legend-dot passing"></span>
+                  Passing Tone
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

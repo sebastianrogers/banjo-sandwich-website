@@ -579,6 +579,7 @@ footer {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  gap: 8px;
 }
 
 .test-number {
@@ -702,6 +703,17 @@ footer {
   margin: 0;
 }
 
+.checkbox-label {
+  font-weight: normal !important;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.control-group input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: #8b4513;
+}
+
 .instrument-selection select {
   padding: 8px 12px;
   border: 1px solid #8b4513;
@@ -766,7 +778,7 @@ footer {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .fretboard-instrument-selection {
     flex-direction: column;
     gap: 10px;

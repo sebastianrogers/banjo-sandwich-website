@@ -31,6 +31,19 @@ let currentInstrument = "synth"; // 'banjo' or 'synth'
 // Current capo position
 let currentCapoPosition = 0;
 
+// Reference note settings
+let useReferenceNote = true;
+let baseReferenceNote = "G3"; // Root of G major pentatonic
+let currentReferenceNote = "G3";
+
+// Update reference note based on capo position
+function updateReferenceNoteForCapo() {
+  currentReferenceNote = transposeNoteForCapo(
+    baseReferenceNote,
+    currentCapoPosition,
+  );
+}
+
 // Initialize instrument from URL parameter
 function initializeFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -93,6 +106,9 @@ function setCapoPosition(capoFrets) {
 
   // Update pentatonic collection based on capo
   updatePentatonicCollectionForCapo();
+
+  // Update reference note for new capo position
+  updateReferenceNoteForCapo();
 
   // Regenerate tests with new transposed notes
   generateTwelveTests();
@@ -222,6 +238,21 @@ function updatePentatonicCollectionForCapo() {
   pentatonicBoxNoteCollection = basePentatonicBoxNoteCollection.map((note) =>
     transposeNoteForCapo(note, currentCapoPosition),
   );
+}
+
+// Toggle reference note feature
+function toggleReferenceNote(enabled) {
+  useReferenceNote = enabled;
+  renderTests(); // Re-render to update button text
+
+  // Track reference note toggle
+  if (typeof gtag !== "undefined") {
+    gtag("event", "reference_note_toggle", {
+      event_category: "ear_training",
+      event_label: enabled ? "enabled" : "disabled",
+      custom_parameter_1: "reference_note_setting",
+    });
+  }
 }
 
 // Array to store all test states
@@ -363,7 +394,29 @@ function playTestNote(testIndex) {
         });
       }
     }
-    playNote(test.targetNote);
+
+    if (useReferenceNote) {
+      // Play reference note first
+      playNote(currentReferenceNote);
+
+      // Track reference note plays
+      if (typeof gtag !== "undefined") {
+        gtag("event", "reference_note_play", {
+          event_category: "ear_training",
+          event_label: currentReferenceNote,
+          test_number: testIndex + 1,
+          custom_parameter_1: "automatic_reference_note",
+        });
+      }
+
+      // Play the test note after a short delay
+      setTimeout(() => {
+        playNote(test.targetNote);
+      }, 1200); // 1.2 second delay
+    } else {
+      // Play test note immediately if no reference
+      playNote(test.targetNote);
+    }
   }
 }
 
@@ -502,6 +555,7 @@ function updateOverallTotals() {
 document.addEventListener("DOMContentLoaded", function () {
   initializeFromURL();
   updatePentatonicCollectionForCapo();
+  updateReferenceNoteForCapo();
   generateTwelveTests();
 
   // Update fretboard display if function is available (from HTML page)
