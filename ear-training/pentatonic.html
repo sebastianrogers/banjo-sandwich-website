@@ -263,24 +263,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         // Small delay to ensure elements are rendered
         setTimeout(updateFretboardDisplay, 100);
-        // Initialize instructions state from URL
-        initializeInstructionsFromURL();
       });
-
-      // Initialize instructions state from URL parameter
-      function initializeInstructionsFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const instructionsParam = urlParams.get("instructions");
-
-        // Default to showing instructions if no parameter is set
-        const showInstructions = instructionsParam !== "false";
-
-        const checkbox = document.getElementById("show-instructions-toggle");
-        if (checkbox) {
-          checkbox.checked = showInstructions;
-          toggleDescription(showInstructions);
-        }
-      }
 
       // Update URL parameter when instructions toggle changes
       function updateInstructionsURLParameter(value) {
@@ -312,6 +295,11 @@
 
         // Update URL parameter
         updateInstructionsURLParameter(isChecked);
+
+        // Save to local storage if the function is available
+        if (typeof setInstructionsDisplay === "function") {
+          setInstructionsDisplay(isChecked);
+        }
 
         // Track toggle usage
         if (typeof gtag !== "undefined") {
@@ -476,6 +464,23 @@
               <label for="reference-note-toggle" class="checkbox-label"
                 >Enable</label
               >
+            </div>
+
+            <div class="control-group">
+              <label>Progress:</label>
+              <div class="progress-controls">
+                <button
+                  onclick="startFreshSession()"
+                  title="Start a fresh set of tests (clears saved progress)"
+                  class="action-button fresh-button"
+                >
+                  Fresh Tests
+                </button>
+                <span
+                  id="saved-progress-indicator"
+                  class="progress-indicator"
+                ></span>
+              </div>
             </div>
 
             <div class="control-group">

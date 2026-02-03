@@ -36,6 +36,9 @@ let useReferenceNote = true;
 let baseReferenceNote = "G3"; // Root of G major pentatonic
 let currentReferenceNote = "G3";
 
+// Instructions display state
+let showInstructions = true;
+
 // Update reference note based on capo position
 function updateReferenceNoteForCapo() {
   currentReferenceNote = transposeNoteForCapo(
@@ -58,6 +61,14 @@ function initializeFromURL() {
   if (capoParam && !isNaN(parseInt(capoParam))) {
     currentCapoPosition = parseInt(capoParam);
     updateCapoSelector();
+  }
+
+  // Handle instructions parameter (overrides saved state)
+  const instructionsParam = urlParams.get("instructions");
+  if (instructionsParam !== null) {
+    // If instructions parameter is present, it overrides saved state
+    showInstructions = instructionsParam !== "false";
+    updateInstructionsToggle();
   }
 }
 
@@ -84,10 +95,23 @@ function updateCapoSelector() {
   }
 }
 
+// Update the instructions toggle UI
+function updateInstructionsToggle() {
+  const toggle = document.getElementById("show-instructions-toggle");
+  if (toggle) {
+    toggle.checked = showInstructions;
+    // Trigger the toggle function to update the display
+    if (typeof toggleDescription === "function") {
+      toggleDescription(showInstructions);
+    }
+  }
+}
+
 // Switch between instruments
 function setInstrument(instrument) {
   currentInstrument = instrument;
   updateURLParameter("instrument", instrument);
+  saveStateToStorage(); // Save state when instrument changes
 
   // Track instrument change
   if (typeof gtag !== "undefined") {
@@ -112,6 +136,9 @@ function setCapoPosition(capoFrets) {
 
   // Regenerate tests with new transposed notes
   generateTwelveTests();
+
+  // Save state after capo change
+  saveStateToStorage();
 
   // Update fretboard display if function is available (from HTML page)
   if (typeof updateFretboardDisplay === "function") {
@@ -244,6 +271,7 @@ function updatePentatonicCollectionForCapo() {
 function toggleReferenceNote(enabled) {
   useReferenceNote = enabled;
   renderTests(); // Re-render to update button text
+  saveStateToStorage(); // Save state when reference note setting changes
 
   // Track reference note toggle
   if (typeof gtag !== "undefined") {
@@ -255,12 +283,177 @@ function toggleReferenceNote(enabled) {
   }
 }
 
+// Set instructions display state
+function setInstructionsDisplay(enabled) {
+  showInstructions = enabled;
+  saveStateToStorage(); // Save state when instructions setting changes
+
+  // Track instructions toggle if analytics are available
+  if (typeof gtag !== "undefined") {
+    gtag("event", "instructions_toggle", {
+      event_category: "ear_training",
+      event_label: enabled ? "shown" : "hidden",
+      custom_parameter_1: "instructions_display",
+    });
+  }
+}
+
 // Array to store all test states
 let testCollection = [];
 
 // Overall totals
 let overallCorrectGuesses = 0;
 let overallIncorrectGuesses = 0;
+
+// Local storage key for saving state
+const STORAGE_KEY = "ear-training-state";
+
+// Load state from local storage
+function loadStateFromStorage() {
+  try {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      const state = JSON.parse(savedState);
+
+      // Restore user settings
+      if (state.settings) {
+        currentInstrument = state.settings.instrument || currentInstrument;
+        currentCapoPosition =
+          state.settings.capoPosition || currentCapoPosition;
+        useReferenceNote =
+          state.settings.useReferenceNote !== undefined
+            ? state.settings.useReferenceNote
+            : useReferenceNote;
+        showInstructions =
+          state.settings.showInstructions !== undefined
+            ? state.settings.showInstructions
+            : showInstructions;
+
+        // Update UI selectors
+        updateInstrumentSelector();
+        updateCapoSelector();
+        updateInstructionsToggle();
+
+        // Update collections and reference note
+        updatePentatonicCollectionForCapo();
+        updateReferenceNoteForCapo();
+      }
+
+      // Restore test progress
+      if (state.testCollection && state.testCollection.length > 0) {
+        testCollection = state.testCollection;
+      }
+
+      // Restore overall statistics
+      if (state.statistics) {
+        overallCorrectGuesses = state.statistics.correct || 0;
+        overallIncorrectGuesses = state.statistics.incorrect || 0;
+      }
+
+      return true; // Successfully loaded state
+    }
+  } catch (error) {
+    console.warn("Error loading state from local storage:", error);
+  }
+  return false; // No state loaded
+}
+
+// Save current state to local storage
+function saveStateToStorage() {
+  try {
+    const state = {
+      settings: {
+        instrument: currentInstrument,
+        capoPosition: currentCapoPosition,
+        useReferenceNote: useReferenceNote,
+        showInstructions: showInstructions,
+      },
+      testCollection: testCollection,
+      statistics: {
+        correct: overallCorrectGuesses,
+        incorrect: overallIncorrectGuesses,
+      },
+      lastSaved: new Date().toISOString(),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.warn("Error saving state to local storage:", error);
+  }
+}
+
+// Clear saved state from local storage
+function clearSavedState() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.warn("Error clearing saved state:", error);
+  }
+}
+
+// Start a fresh session (clear saved state and generate new tests)
+function startFreshSession() {
+  // Clear local storage
+  clearSavedState();
+
+  // Generate new tests and reset scores
+  generateTwelveTests();
+
+  // Update progress indicator
+  updateProgressIndicator();
+
+  // Track fresh session start
+  if (typeof gtag !== "undefined") {
+    gtag("event", "fresh_session_start", {
+      event_category: "ear_training",
+      event_label: "manual_reset",
+      custom_parameter_1: "user_initiated",
+    });
+  }
+}
+
+// Check if there is saved progress
+function hasSavedProgress() {
+  try {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      return state.testCollection && state.testCollection.length > 0;
+    }
+  } catch (error) {
+    return false;
+  }
+  return false;
+}
+
+// Update progress indicator in UI
+function updateProgressIndicator() {
+  const indicator = document.getElementById("saved-progress-indicator");
+  if (indicator) {
+    if (hasSavedProgress()) {
+      const completedTests = testCollection.filter(
+        (test) => test.guessedCorrectly,
+      ).length;
+      const totalTests = testCollection.length;
+      const inProgressTests = testCollection.filter(
+        (test) => test.status !== "not-tried" && !test.guessedCorrectly,
+      ).length;
+
+      if (completedTests === totalTests && totalTests > 0) {
+        indicator.textContent = "✓ Session complete";
+        indicator.style.color = "#28a745";
+      } else if (inProgressTests > 0 || completedTests > 0) {
+        indicator.textContent = `Progress saved (${completedTests}/${totalTests} complete)`;
+        indicator.style.color = "#007bff";
+      } else {
+        indicator.textContent = "Fresh tests ready";
+        indicator.style.color = "#666";
+      }
+    } else {
+      indicator.textContent = "";
+    }
+  }
+}
 
 function generateTwelveTests() {
   // Clear existing tests
@@ -301,6 +494,9 @@ function generateTwelveTests() {
   overallCorrectGuesses = 0;
   overallIncorrectGuesses = 0;
 
+  // Save state after generating new tests
+  saveStateToStorage();
+
   // Track test generation in Analytics
   if (typeof gtag !== "undefined") {
     gtag("event", "ear_training_start", {
@@ -313,6 +509,7 @@ function generateTwelveTests() {
   // Render the tests
   renderTests();
   updateOverallTotals();
+  updateProgressIndicator();
 }
 
 function renderTests() {
@@ -509,6 +706,10 @@ function selectTestNote(testIndex, note) {
   // Re-render the tests to update the UI
   renderTests();
   updateOverallTotals();
+  updateProgressIndicator();
+
+  // Save state after each guess
+  saveStateToStorage();
 }
 
 function updateOverallTotals() {
@@ -553,10 +754,23 @@ function updateOverallTotals() {
 
 // Generate tests automatically when the page loads
 document.addEventListener("DOMContentLoaded", function () {
+  // Try to load saved state first
+  const hasLoadedState = loadStateFromStorage();
+
+  // Initialize from URL (this will override saved state if URL params are present)
   initializeFromURL();
-  updatePentatonicCollectionForCapo();
-  updateReferenceNoteForCapo();
-  generateTwelveTests();
+
+  // Only generate new tests if no saved state exists
+  if (!hasLoadedState) {
+    updatePentatonicCollectionForCapo();
+    updateReferenceNoteForCapo();
+    generateTwelveTests();
+  } else {
+    // If we loaded saved state, just render the existing tests
+    renderTests();
+    updateOverallTotals();
+    updateProgressIndicator();
+  }
 
   // Update fretboard display if function is available (from HTML page)
   setTimeout(() => {
