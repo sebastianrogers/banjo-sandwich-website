@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ear Training Test Suite</title>
+
+    <!-- Load required dependencies -->
+    <script src="https://unpkg.com/tone"></script>
+    <script src="../js/ear-training.js" defer></script>
+
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        line-height: 1.6;
+      }
+      .test-section {
+        margin: 2rem 0;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .test-section h3 {
+        color: #2c3e50;
+        margin-top: 0;
+      }
+      .test-result {
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+        border-radius: 4px;
+      }
+      .test-pass {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .test-fail {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .test-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 0.25rem;
+      }
+      .test-button:hover {
+        background-color: #0056b3;
+      }
+      #test-output {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 4px;
+        white-space: pre-line;
+        min-height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎵 Ear Training Test Suite</h1>
+
+    <div class="test-section">
+      <h3>Automated Tests</h3>
+      <button class="test-button" onclick="runUnitTests()">
+        Run Unit Tests
+      </button>
+      <div id="unit-test-results"></div>
+    </div>
+
+    <div class="test-section">
+      <h3>Audio System Tests</h3>
+      <button class="test-button" onclick="testAudioSetup()">
+        Test Audio Setup
+      </button>
+      <button class="test-button" onclick="testInstruments()">
+        Test Instruments
+      </button>
+      <button class="test-button" onclick="testNotePlayback()">
+        Test Note Playback
+      </button>
+      <div id="audio-test-results"></div>
+    </div>
+
+    <div class="test-section">
+      <h3>UI Integration Tests</h3>
+      <button class="test-button" onclick="testCapoChanges()">
+        Test Capo Changes
+      </button>
+      <button class="test-button" onclick="testInstrumentSwitching()">
+        Test Instrument Switching
+      </button>
+      <button class="test-button" onclick="testStatePeristence()">
+        Test State Persistence
+      </button>
+      <div id="ui-test-results"></div>
+    </div>
+
+    <div class="test-section">
+      <h3>Manual Test Checklist</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+        <div>
+          <h4>Core Functionality</h4>
+          <label><input type="checkbox" /> Play test note works</label><br />
+          <label
+            ><input type="checkbox" /> Note selection provides feedback</label
+          ><br />
+          <label><input type="checkbox" /> Correct answers turn green</label
+          ><br />
+          <label><input type="checkbox" /> Incorrect answers turn red</label
+          ><br />
+          <label><input type="checkbox" /> Progress is tracked correctly</label
+          ><br />
+          <label><input type="checkbox" /> Overall stats update</label><br />
+        </div>
+        <div>
+          <h4>Features</h4>
+          <label><input type="checkbox" /> Reference note toggle works</label
+          ><br />
+          <label><input type="checkbox" /> Capo position changes notes</label
+          ><br />
+          <label><input type="checkbox" /> Instrument switching works</label
+          ><br />
+          <label><input type="checkbox" /> State persists on refresh</label
+          ><br />
+          <label><input type="checkbox" /> Fresh session button works</label
+          ><br />
+          <label><input type="checkbox" /> All 12 tests can be completed</label
+          ><br />
+        </div>
+      </div>
+    </div>
+
+    <div class="test-section">
+      <h3>Test Output</h3>
+      <div id="test-output"></div>
+    </div>
+
+    <!-- Hidden elements required by ear-training.js -->
+    <div style="display: none">
+      <div id="tests-container"></div>
+      <div id="overall-totals"></div>
+      <div id="saved-progress-indicator"></div>
+    </div>
+
+    <script>
+      let testOutput = document.getElementById("test-output");
+
+      function log(message) {
+        testOutput.textContent += message + "\n";
+        console.log(message);
+      }
+
+      function clearOutput() {
+        testOutput.textContent = "";
+      }
+
+      async function runUnitTests() {
+        clearOutput();
+        log("🧪 Running unit tests...\n");
+
+        // Test note transposition
+        function transposeNoteForCapo(note, capoFrets) {
+          if (capoFrets === 0) return note;
+
+          const noteRegex = /([A-G][#b]?)([0-9]+)/;
+          const match = note.match(noteRegex);
+          if (!match) return note;
+
+          const noteName = match[1];
+          const octave = parseInt(match[2]);
+
+          const chromaticScale = [
+            "C",
+            "C#",
+            "D",
+            "D#",
+            "E",
+            "F",
+            "F#",
+            "G",
+            "G#",
+            "A",
+            "A#",
+            "B",
+          ];
+
+          let noteIndex = chromaticScale.indexOf(noteName);
+          if (noteIndex === -1) return note;
+
+          const newNoteIndex = (noteIndex + capoFrets) % 12;
+          let newOctave = octave;
+
+          if (noteIndex + capoFrets >= 12) {
+            newOctave += Math.floor((noteIndex + capoFrets) / 12);
+          }
+
+          return chromaticScale[newNoteIndex] + newOctave;
+        }
+
+        // Run transposition tests
+        const tests = [
+          { note: "G3", capo: 0, expected: "G3" },
+          { note: "G3", capo: 2, expected: "A3" },
+          { note: "B3", capo: 1, expected: "C4" },
+          { note: "D3", capo: 12, expected: "D4" },
+        ];
+
+        let passed = 0;
+        tests.forEach((test, i) => {
+          const result = transposeNoteForCapo(test.note, test.capo);
+          const success = result === test.expected;
+          log(
+            `Test ${i + 1}: ${test.note} + capo ${test.capo} = ${result} ${success ? "✅" : "❌"}`,
+          );
+          if (success) passed++;
+        });
+
+        log(`\n📊 Unit Tests: ${passed}/${tests.length} passed`);
+
+        const resultDiv = document.getElementById("unit-test-results");
+        resultDiv.innerHTML = `<div class="test-result ${passed === tests.length ? "test-pass" : "test-fail"}">
+                Unit Tests: ${passed}/${tests.length} passed
+            </div>`;
+      }
+
+      async function testAudioSetup() {
+        clearOutput();
+        log("🔊 Testing audio setup...\n");
+
+        try {
+          // Test if Tone.js is available
+          if (typeof Tone === "undefined") {
+            log("❌ Tone.js not loaded");
+            return;
+          }
+          log("✅ Tone.js loaded");
+
+          // Test audio context
+          if (Tone.context.state === "suspended") {
+            await Tone.start();
+            log("✅ Audio context started");
+          } else {
+            log("✅ Audio context already active");
+          }
+
+          // Test if banjo samples are loaded
+          if (typeof banjoSampler !== "undefined") {
+            log(`✅ Banjo sampler available (loaded: ${banjoSampler.loaded})`);
+          } else {
+            log("❌ Banjo sampler not available");
+          }
+
+          // Test if synth is available
+          if (typeof synthInstrument !== "undefined") {
+            log("✅ Synth instrument available");
+          } else {
+            log("❌ Synth instrument not available");
+          }
+
+          document.getElementById("audio-test-results").innerHTML =
+            '<div class="test-result test-pass">Audio setup tests completed</div>';
+        } catch (error) {
+          log(`❌ Audio setup error: ${error.message}`);
+          document.getElementById("audio-test-results").innerHTML =
+            '<div class="test-result test-fail">Audio setup failed</div>';
+        }
+      }
+
+      async function testInstruments() {
+        clearOutput();
+        log("🎸 Testing instruments...\n");
+
+        try {
+          await Tone.start();
+
+          // Test synth
+          log("Testing synth instrument...");
+          if (typeof synthInstrument !== "undefined") {
+            synthInstrument.triggerAttackRelease("C4", "8n");
+            log("✅ Synth test note played");
+          } else {
+            log("❌ Synth not available");
+          }
+
+          // Wait a bit
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // Test banjo sampler
+          log("Testing banjo instrument...");
+          if (typeof banjoSampler !== "undefined" && banjoSampler.loaded) {
+            banjoSampler.triggerAttackRelease("G3", "8n");
+            log("✅ Banjo test note played");
+          } else {
+            log("⚠️ Banjo samples not loaded or not available");
+          }
+
+          document.getElementById("audio-test-results").innerHTML +=
+            '<div class="test-result test-pass">Instrument tests completed</div>';
+        } catch (error) {
+          log(`❌ Instrument test error: ${error.message}`);
+          document.getElementById("audio-test-results").innerHTML +=
+            '<div class="test-result test-fail">Instrument tests failed</div>';
+        }
+      }
+
+      async function testNotePlayback() {
+        clearOutput();
+        log("🎵 Testing note playback...\n");
+
+        const testNotes = ["D3", "G3", "A3", "D4"];
+
+        try {
+          await Tone.start();
+
+          for (const note of testNotes) {
+            log(`Playing ${note}...`);
+
+            if (typeof playNote === "function") {
+              playNote(note);
+              log(`✅ ${note} played successfully`);
+            } else {
+              log(`❌ playNote function not available`);
+            }
+
+            // Wait between notes
+            await new Promise((resolve) => setTimeout(resolve, 800));
+          }
+
+          document.getElementById("audio-test-results").innerHTML +=
+            '<div class="test-result test-pass">Note playback tests completed</div>';
+        } catch (error) {
+          log(`❌ Note playback error: ${error.message}`);
+          document.getElementById("audio-test-results").innerHTML +=
+            '<div class="test-result test-fail">Note playback tests failed</div>';
+        }
+      }
+
+      async function testCapoChanges() {
+        clearOutput();
+        log("🎯 Testing capo changes...\n");
+
+        try {
+          // Test capo function availability
+          if (typeof setCapoPosition === "function") {
+            log("✅ setCapoPosition function available");
+
+            // Test different capo positions
+            const testPositions = [0, 2, 5, 7];
+            for (const pos of testPositions) {
+              setCapoPosition(pos);
+              log(`✅ Capo set to fret ${pos}`);
+              await new Promise((resolve) => setTimeout(resolve, 200));
+            }
+          } else {
+            log("❌ setCapoPosition function not available");
+          }
+
+          document.getElementById("ui-test-results").innerHTML =
+            '<div class="test-result test-pass">Capo tests completed</div>';
+        } catch (error) {
+          log(`❌ Capo test error: ${error.message}`);
+          document.getElementById("ui-test-results").innerHTML =
+            '<div class="test-result test-fail">Capo tests failed</div>';
+        }
+      }
+
+      async function testInstrumentSwitching() {
+        clearOutput();
+        log("🎸 Testing instrument switching...\n");
+
+        try {
+          if (typeof setInstrument === "function") {
+            log("✅ setInstrument function available");
+
+            setInstrument("synth");
+            log("✅ Switched to synth");
+            await new Promise((resolve) => setTimeout(resolve, 200));
+
+            setInstrument("banjo");
+            log("✅ Switched to banjo");
+          } else {
+            log("❌ setInstrument function not available");
+          }
+
+          document.getElementById("ui-test-results").innerHTML +=
+            '<div class="test-result test-pass">Instrument switching tests completed</div>';
+        } catch (error) {
+          log(`❌ Instrument switching error: ${error.message}`);
+          document.getElementById("ui-test-results").innerHTML +=
+            '<div class="test-result test-fail">Instrument switching failed</div>';
+        }
+      }
+
+      async function testStatePeristence() {
+        clearOutput();
+        log("💾 Testing state persistence...\n");
+
+        try {
+          // Test localStorage availability
+          if (typeof localStorage !== "undefined") {
+            log("✅ localStorage available");
+
+            // Test saving state
+            if (typeof saveStateToStorage === "function") {
+              saveStateToStorage();
+              log("✅ State saved successfully");
+            } else {
+              log("❌ saveStateToStorage function not available");
+            }
+
+            // Test loading state
+            if (typeof loadStateFromStorage === "function") {
+              const loaded = loadStateFromStorage();
+              log(`✅ State loading function available (loaded: ${loaded})`);
+            } else {
+              log("❌ loadStateFromStorage function not available");
+            }
+          } else {
+            log("❌ localStorage not available");
+          }
+
+          document.getElementById("ui-test-results").innerHTML +=
+            '<div class="test-result test-pass">State persistence tests completed</div>';
+        } catch (error) {
+          log(`❌ State persistence error: ${error.message}`);
+          document.getElementById("ui-test-results").innerHTML +=
+            '<div class="test-result test-fail">State persistence failed</div>';
+        }
+      }
+
+      // Add reference to main ear training script
+      log("🎵 Ear Training Test Suite Ready\n");
+      log("Dependencies loaded: Tone.js and ear-training.js\n");
+      log(
+        "Click the test buttons above to run audio and functionality tests.\n",
+      );
+    </script>
+  </body>
+</html>

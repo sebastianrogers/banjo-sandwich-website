@@ -1,5 +1,10 @@
 # Coding Guidelines
 
+## Definition of Done
+
+- All tests, including browser tests, pass
+- The <README.md> file is updated with relevant pending changes
+
 ## Naming Conventions
 
 ### Collections
