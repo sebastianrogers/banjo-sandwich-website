@@ -519,11 +519,24 @@ function renderTests() {
   testCollection.forEach((test, index) => {
     const testDiv = document.createElement("div");
     testDiv.className = "test-item";
+    
+    // Create button text based on settings
+    let playButtonText = "Play Note";
+    if (useReferenceNote) {
+      if (currentCapoPosition > 0) {
+        playButtonText = `Play Note (with ${currentReferenceNote} ref, capo ${currentCapoPosition})`;
+      } else {
+        playButtonText = `Play Note (with ${currentReferenceNote} reference)`;
+      }
+    } else if (currentCapoPosition > 0) {
+      playButtonText = `Play Note (capo ${currentCapoPosition})`;
+    }
+    
     testDiv.innerHTML = `
       <div class="test-header">
         <span class="test-number">Test ${index + 1}</span>
         <button class="play-test-btn" onclick="playTestNote(${index})" >
-          Play Note
+          ${playButtonText}
         </button>
       </div>
       
@@ -547,35 +560,41 @@ function renderTests() {
 }
 
 function createPentatonicTestLayout(testIndex, test) {
-  // Create a pentatonic layout that mimics the fretboard visualization
-  const notePositions = {
-    D4: { string: "D", fret: 0, position: "open" },
-    E4: { string: "D", fret: 2, position: "fret2" },
-    B3: { string: "B", fret: 0, position: "open" },
-    C4: { string: "B", fret: 1, position: "fret1" }, // passing tone
-    G3: { string: "G", fret: 0, position: "open" },
-    A3: { string: "G", fret: 2, position: "fret2" },
-    D3: { string: "D-low", fret: 0, position: "open" },
-    E3: { string: "D-low", fret: 2, position: "fret2" },
+  // Calculate capo-adjusted notes for the layout
+  const baseNotes = {
+    D4: "D4",
+    E4: "E4", 
+    B3: "B3",
+    C4: "C4", // passing tone
+    G3: "G3",
+    A3: "A3",
+    D3: "D3",
+    E3: "E3"
   };
+
+  // Transpose all base notes for current capo position
+  const transposedNotes = {};
+  for (const [key, note] of Object.entries(baseNotes)) {
+    transposedNotes[key] = transposeNoteForCapo(note, currentCapoPosition);
+  }
 
   let layout = `
     <div class="test-fretboard-layout">
       <!-- Test layout headers -->
       <div class="test-fret-numbers">
         <span class="test-fret-label">String</span>
-        <span class="test-fret-label">Open</span>
-        <span class="test-fret-label">1</span>
-        <span class="test-fret-label">2</span>
+        <span class="test-fret-label">${currentCapoPosition > 0 ? 'Capo' : 'Open'}</span>
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 1 : '1'}</span>
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 2 : '2'}</span>
       </div>
   `;
 
-  // String rows in order from high to low
+  // String rows in order from high to low - use transposed notes
   const strings = [
-    { name: "D", label: "D (1st)", notes: ["D4", null, "E4"] },
-    { name: "B", label: "B (2nd)", notes: ["B3", "C4", null] },
-    { name: "G", label: "G (3rd)", notes: ["G3", null, "A3"] },
-    { name: "D-low", label: "D (4th)", notes: ["D3", null, "E3"] },
+    { name: "D", label: "D (1st)", notes: [transposedNotes.D4, null, transposedNotes.E4] },
+    { name: "B", label: "B (2nd)", notes: [transposedNotes.B3, transposedNotes.C4, null] },
+    { name: "G", label: "G (3rd)", notes: [transposedNotes.G3, null, transposedNotes.A3] },
+    { name: "D-low", label: "D (4th)", notes: [transposedNotes.D3, null, transposedNotes.E3] },
   ];
 
   strings.forEach((string) => {
@@ -584,12 +603,13 @@ function createPentatonicTestLayout(testIndex, test) {
 
     string.notes.forEach((note, fretIndex) => {
       if (note && pentatonicBoxNoteCollection.includes(note)) {
-        const isPassingTone = note === "C4";
+        // Check if this is a passing tone (transposed C4)
+        const isPassingTone = note === transposedNotes.C4;
         const buttonClass = `test-note-btn-fretboard ${test.buttonFeedback && test.buttonFeedback[note] ? test.buttonFeedback[note] : ""} ${isPassingTone ? "passing-tone" : "pentatonic-note"}`;
         layout += `
           <div class="test-fret ${isPassingTone ? "passing" : "pentatonic"}">
             <button id="test-${testIndex}-note-${note}" class="${buttonClass}" onclick="selectTestNote(${testIndex}, '${note}')" ${!test.buttonsEnabled ? "disabled" : ""}>
-              ${note}
+              ${note}${currentCapoPosition > 0 ? `<br><small>(+${currentCapoPosition})</small>` : ''}
             </button>
           </div>`;
       } else {

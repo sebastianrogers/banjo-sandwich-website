@@ -713,9 +713,14 @@ footer {
   cursor: pointer;
   transition: all 0.3s ease;
   width: 46px;
-  height: 24px;
+  height: 36px; /* Increased height for capo indicators */
   max-width: 100%;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.1;
 }
 
 .test-note-btn-fretboard:hover {
@@ -766,6 +771,14 @@ footer {
   background-color: #f8f9fa;
   transform: none;
   cursor: default;
+}
+
+/* Capo indicator styling for test buttons */
+.test-note-btn-fretboard small {
+  font-size: 8px;
+  color: inherit;
+  font-weight: normal;
+  opacity: 0.8;
 }
 
 .test-legend {
