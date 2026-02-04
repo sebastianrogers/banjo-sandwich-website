@@ -537,20 +537,90 @@ function renderTests() {
         <span>Guesses: ${test.guessCount}</span>
       </div>
       
-      <div class="test-pentatonic-buttons">
-        ${pentatonicBoxNoteCollection
-          .map(
-            (note) =>
-              `<button id="test-${index}-note-${note}" class="test-note-btn ${test.buttonFeedback && test.buttonFeedback[note] ? test.buttonFeedback[note] : ""}" onclick="selectTestNote(${index}, '${note}')" ${!test.buttonsEnabled ? "disabled" : ""}>
-             ${note}
-           </button>`,
-          )
-          .join("")}
+      <div class="test-pentatonic-layout">
+        ${createPentatonicTestLayout(index, test)}
       </div>
     `;
 
     container.appendChild(testDiv);
   });
+}
+
+function createPentatonicTestLayout(testIndex, test) {
+  // Create a pentatonic layout that mimics the fretboard visualization
+  const notePositions = {
+    D4: { string: "D", fret: 0, position: "open" },
+    E4: { string: "D", fret: 2, position: "fret2" },
+    B3: { string: "B", fret: 0, position: "open" },
+    C4: { string: "B", fret: 1, position: "fret1" }, // passing tone
+    G3: { string: "G", fret: 0, position: "open" },
+    A3: { string: "G", fret: 2, position: "fret2" },
+    D3: { string: "D-low", fret: 0, position: "open" },
+    E3: { string: "D-low", fret: 2, position: "fret2" },
+  };
+
+  let layout = `
+    <div class="test-fretboard-layout">
+      <!-- Test layout headers -->
+      <div class="test-fret-numbers">
+        <span class="test-fret-label">String</span>
+        <span class="test-fret-label">Open</span>
+        <span class="test-fret-label">1</span>
+        <span class="test-fret-label">2</span>
+      </div>
+  `;
+
+  // String rows in order from high to low
+  const strings = [
+    { name: "D", label: "D (1st)", notes: ["D4", null, "E4"] },
+    { name: "B", label: "B (2nd)", notes: ["B3", "C4", null] },
+    { name: "G", label: "G (3rd)", notes: ["G3", null, "A3"] },
+    { name: "D-low", label: "D (4th)", notes: ["D3", null, "E3"] },
+  ];
+
+  strings.forEach((string) => {
+    layout += `<div class="test-string-row">`;
+    layout += `<span class="test-string-label">${string.label}</span>`;
+
+    string.notes.forEach((note, fretIndex) => {
+      if (note && pentatonicBoxNoteCollection.includes(note)) {
+        const isPassingTone = note === "C4";
+        const buttonClass = `test-note-btn-fretboard ${test.buttonFeedback && test.buttonFeedback[note] ? test.buttonFeedback[note] : ""} ${isPassingTone ? "passing-tone" : "pentatonic-note"}`;
+        layout += `
+          <div class="test-fret ${isPassingTone ? "passing" : "pentatonic"}">
+            <button id="test-${testIndex}-note-${note}" class="${buttonClass}" onclick="selectTestNote(${testIndex}, '${note}')" ${!test.buttonsEnabled ? "disabled" : ""}>
+              ${note}
+            </button>
+          </div>`;
+      } else {
+        // Create disabled placeholder button for empty positions
+        layout += `
+          <div class="test-fret empty">
+            <button class="test-note-btn-fretboard disabled-placeholder" disabled>
+              —
+            </button>
+          </div>`;
+      }
+    });
+
+    layout += `</div>`;
+  });
+
+  layout += `
+      <div class="test-legend">
+        <span class="test-legend-item">
+          <span class="test-legend-dot pentatonic"></span>
+          Pentatonic Notes
+        </span>
+        <span class="test-legend-item">
+          <span class="test-legend-dot passing"></span>
+          Passing Tone
+        </span>
+      </div>
+    </div>
+  `;
+
+  return layout;
 }
 
 function getStatusText(status) {

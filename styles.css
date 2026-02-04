@@ -539,7 +539,7 @@ footer {
 /* Tests container styles */
 .tests-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 15px;
   margin-top: 30px;
 }
@@ -552,7 +552,7 @@ footer {
   }
 
   .ear-training-page .tests-container {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(max-content, 1fr));
   }
 }
 
@@ -562,7 +562,7 @@ footer {
   }
 
   .ear-training-page .tests-container {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(max-content, 1fr));
   }
 }
 
@@ -625,6 +625,179 @@ footer {
   flex-wrap: wrap;
   gap: 6px;
   justify-content: center;
+}
+
+.test-pentatonic-layout {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.test-fretboard-layout {
+  width: fit-content;
+  min-width: 280px;
+  background: linear-gradient(to right, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 6px;
+  padding: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee2e6;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.test-fret-numbers {
+  display: grid;
+  grid-template-columns: 55px 50px 50px 50px;
+  gap: 3px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.test-fret-label {
+  color: #495057;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 3px 0;
+}
+
+.test-string-row {
+  display: grid;
+  grid-template-columns: 55px 50px 50px 50px;
+  gap: 3px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.test-string-label {
+  text-align: center;
+  font-weight: bold;
+  color: #495057;
+  background-color: rgba(139, 69, 19, 0.1);
+  padding: 4px 2px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+
+.test-fret {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  border-radius: 3px;
+}
+
+.test-fret.pentatonic {
+  background-color: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.test-fret.passing {
+  background-color: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.test-fret.empty {
+  background: none;
+  border: 1px solid transparent;
+}
+
+.test-note-btn-fretboard {
+  background-color: #f8f9fa;
+  border: 2px solid #8b4513;
+  color: #8b4513;
+  padding: 2px 4px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 46px;
+  height: 24px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.test-note-btn-fretboard:hover {
+  background-color: #8b4513;
+  color: white;
+  transform: scale(1.05);
+}
+
+.test-note-btn-fretboard:disabled {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.test-note-btn-fretboard.btn-correct {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+  color: white !important;
+  transform: scale(1.1);
+}
+
+.test-note-btn-fretboard.btn-incorrect {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.test-note-btn-fretboard.passing-tone {
+  border-color: #ffc107;
+}
+
+.test-note-btn-fretboard.passing-tone:hover {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.test-note-btn-fretboard.disabled-placeholder {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px dashed #dee2e6;
+  cursor: default;
+  font-weight: normal;
+}
+
+.test-note-btn-fretboard.disabled-placeholder:hover {
+  background-color: #f8f9fa;
+  transform: none;
+  cursor: default;
+}
+
+.test-legend {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+}
+
+.test-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #495057;
+}
+
+.test-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.test-legend-dot.pentatonic {
+  background-color: rgba(40, 167, 69, 0.3);
+  border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.test-legend-dot.passing {
+  background-color: rgba(255, 193, 7, 0.3);
+  border: 1px solid rgba(255, 193, 7, 0.5);
 }
 
 .test-note-btn {
