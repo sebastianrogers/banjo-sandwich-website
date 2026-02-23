@@ -647,10 +647,15 @@ footer {
 
 .test-fret-numbers {
   display: grid;
-  grid-template-columns: 55px 50px 50px 50px;
+  grid-template-columns: 55px repeat(3, 50px);
   gap: 3px;
   margin-bottom: 8px;
   text-align: center;
+}
+
+/* Expanded layout for full major scale mode */
+.test-fret-numbers.full-major-layout {
+  grid-template-columns: 55px repeat(5, 50px);
 }
 
 .test-fret-label {
@@ -662,10 +667,15 @@ footer {
 
 .test-string-row {
   display: grid;
-  grid-template-columns: 55px 50px 50px 50px;
+  grid-template-columns: 55px repeat(3, 50px);
   gap: 3px;
   margin-bottom: 6px;
   align-items: center;
+}
+
+/* Expanded layout for full major scale mode */
+.test-string-row.full-major-layout {
+  grid-template-columns: 55px repeat(5, 50px);
 }
 
 .test-string-label {
@@ -695,6 +705,11 @@ footer {
 .test-fret.passing {
   background-color: rgba(255, 193, 7, 0.1);
   border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.test-fret.full-major {
+  background-color: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
 .test-fret.empty {
@@ -811,6 +826,11 @@ footer {
 .test-legend-dot.passing {
   background-color: rgba(255, 193, 7, 0.3);
   border: 1px solid rgba(255, 193, 7, 0.5);
+}
+
+.test-legend-dot.full-major {
+  background-color: rgba(231, 76, 60, 0.3);
+  border: 1px solid rgba(231, 76, 60, 0.5);
 }
 
 .test-note-btn {

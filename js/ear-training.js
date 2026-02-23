@@ -222,6 +222,7 @@ const basePentatonicBoxNoteCollection = [
   "C4",
   "D4",
   "E4",
+  "G4",
 ];
 
 // Full G major scale notes (pentatonic + F#)
@@ -236,6 +237,7 @@ const baseFullMajorScaleNoteCollection = [
   "D4",
   "E4",
   "F#4",
+  "G4",
 ];
 
 // Current scale mode ('pentatonic' or 'full-major')
@@ -675,17 +677,23 @@ function renderTests() {
 }
 
 function createPentatonicTestLayout(testIndex, test) {
-  // Calculate capo-adjusted notes for the layout
-  const baseNotes = {
-    D4: "D4",
-    E4: "E4",
-    B3: "B3",
-    C4: "C4", // passing tone
-    G3: "G3",
-    A3: "A3",
-    D3: "D3",
-    E3: "E3",
-  };
+  // Use current scale mode's base notes dynamically
+  const baseCollection = currentScaleMode === 'full-major' 
+    ? baseFullMajorScaleNoteCollection 
+    : basePentatonicBoxNoteCollection;
+
+  // Create base notes mapping from the current collection
+  const baseNotes = {};
+  
+  // Always include passing tone C4 for both modes
+  baseNotes.C4 = "C4";
+  
+  // Add notes from current scale collection
+  baseCollection.forEach(note => {
+    const noteName = note.replace(/[0-9]/g, ''); // Remove octave number
+    const octave = note.match(/[0-9]/)?.[0] || '3';
+    baseNotes[note] = note;
+  });
 
   // Transpose all base notes for current capo position
   const transposedNotes = {};
@@ -693,52 +701,104 @@ function createPentatonicTestLayout(testIndex, test) {
     transposedNotes[key] = transposeNoteForCapo(note, currentCapoPosition);
   }
 
+  // Determine fret layout based on scale mode
+  const fretCount = currentScaleMode === 'full-major' ? 5 : 3;
+  
   let layout = `
-    <div class="test-fretboard-layout">
+    <div class="test-fretboard-layout ${currentScaleMode === 'full-major' ? 'full-major-layout' : ''}">
       <!-- Test layout headers -->
-      <div class="test-fret-numbers">
+      <div class="test-fret-numbers ${currentScaleMode === 'full-major' ? 'full-major-layout' : ''}">
         <span class="test-fret-label">String</span>
         <span class="test-fret-label">${currentCapoPosition > 0 ? "Capo" : "Open"}</span>
         <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 1 : "1"}</span>
-        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 2 : "2"}</span>
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 2 : "2"}</span>`;
+        
+  if (currentScaleMode === 'full-major') {
+    layout += `
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 3 : "3"}</span>
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 4 : "4"}</span>`;
+  }
+  
+  layout += `
       </div>
   `;
 
   // String rows in order from high to low - use transposed notes
-  const strings = [
-    {
-      name: "D",
-      label: "D (1st)",
-      notes: [transposedNotes.D4, null, transposedNotes.E4],
-    },
-    {
-      name: "B",
-      label: "B (2nd)",
-      notes: [transposedNotes.B3, transposedNotes.C4, null],
-    },
-    {
-      name: "G",
-      label: "G (3rd)",
-      notes: [transposedNotes.G3, null, transposedNotes.A3],
-    },
-    {
-      name: "D-low",
-      label: "D (4th)",
-      notes: [transposedNotes.D3, null, transposedNotes.E3],
-    },
-  ];
+  let strings;
+  
+  if (currentScaleMode === 'full-major') {
+    strings = [
+      {
+        name: "D",
+        label: "D (1st)",
+        notes: [transposedNotes.D4, null, transposedNotes.E4, null, transposedNotes["F#4"]],
+      },
+      {
+        name: "B",
+        label: "B (2nd)",
+        notes: [transposedNotes.B3, transposedNotes.C4, null, null, null],
+      },
+      {
+        name: "G",
+        label: "G (3rd)",
+        notes: [transposedNotes.G3, null, transposedNotes.A3, null, null],
+      },
+      {
+        name: "D-low",
+        label: "D (4th)",
+        notes: [transposedNotes.D3, null, transposedNotes.E3, null, transposedNotes["F#3"]],
+      },
+    ];
+  } else {
+    strings = [
+      {
+        name: "D",
+        label: "D (1st)",
+        notes: [transposedNotes.D4, null, transposedNotes.E4],
+      },
+      {
+        name: "B",
+        label: "B (2nd)",
+        notes: [transposedNotes.B3, transposedNotes.C4, null],
+      },
+      {
+        name: "G",
+        label: "G (3rd)",
+        notes: [transposedNotes.G3, null, transposedNotes.A3],
+      },
+      {
+        name: "D-low",
+        label: "D (4th)",
+        notes: [transposedNotes.D3, null, transposedNotes.E3],
+      },
+    ];
+  }
 
   strings.forEach((string) => {
-    layout += `<div class="test-string-row">`;
+    layout += `<div class="test-string-row ${currentScaleMode === 'full-major' ? 'full-major-layout' : ''}">`;
     layout += `<span class="test-string-label">${string.label}</span>`;
 
     string.notes.forEach((note, fretIndex) => {
       if (note && pentatonicBoxNoteCollection.includes(note)) {
-        // Check if this is a passing tone (transposed C4)
+        // Check note type for styling
         const isPassingTone = note === transposedNotes.C4;
-        const buttonClass = `test-note-btn-fretboard ${test.buttonFeedback && test.buttonFeedback[note] ? test.buttonFeedback[note] : ""} ${isPassingTone ? "passing-tone" : "pentatonic-note"}`;
+        const isFullMajorNote = currentScaleMode === 'full-major' && (note === transposedNotes["F#3"] || note === transposedNotes["F#4"]);
+        
+        let noteClass = "pentatonic-note";
+        let fretClass = "pentatonic";
+        
+        if (isPassingTone) {
+          noteClass = "passing-tone";
+          fretClass = "passing";
+        } else if (isFullMajorNote) {
+          noteClass = "full-major-note";
+          fretClass = "full-major";
+        }
+        
+        const buttonClass = `test-note-btn-fretboard ${test.buttonFeedback && test.buttonFeedback[note] ? test.buttonFeedback[note] : ""} ${noteClass}`;
+        
         layout += `
-          <div class="test-fret ${isPassingTone ? "passing" : "pentatonic"}">
+          <div class="test-fret ${fretClass}">
             <button id="test-${testIndex}-note-${note}" class="${buttonClass}" onclick="selectTestNote(${testIndex}, '${note}')" ${!test.buttonsEnabled ? "disabled" : ""}>
               ${note}${currentCapoPosition > 0 ? `<br><small>(+${currentCapoPosition})</small>` : ""}
             </button>
@@ -757,6 +817,7 @@ function createPentatonicTestLayout(testIndex, test) {
     layout += `</div>`;
   });
 
+  // Dynamic legend based on scale mode
   layout += `
       <div class="test-legend">
         <span class="test-legend-item">
@@ -765,8 +826,18 @@ function createPentatonicTestLayout(testIndex, test) {
         </span>
         <span class="test-legend-item">
           <span class="test-legend-dot passing"></span>
-          Passing Tone
-        </span>
+          Passing Tone (C)
+        </span>`;
+        
+  if (currentScaleMode === 'full-major') {
+    layout += `
+        <span class="test-legend-item">
+          <span class="test-legend-dot full-major"></span>
+          Leading Tone (F#)
+        </span>`;
+  }
+  
+  layout += `
       </div>
     </div>
   `;
