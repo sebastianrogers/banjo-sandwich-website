@@ -11,6 +11,7 @@ let banjoSampler = new Tone.Sampler({
     D4: "D4.mp3",
     E4: "E4.mp3",
     "F#4": "F-sharp4.mp3",
+    G4: "G4.mp3",
   },
   baseUrl: "/banjo/",
 }).toDestination();
@@ -238,7 +239,7 @@ const baseFullMajorScaleNoteCollection = [
 ];
 
 // Current scale mode ('pentatonic' or 'full-major')
-let currentScaleMode = 'pentatonic';
+let currentScaleMode = "pentatonic";
 
 // Current pentatonic collection (updated based on capo and scale mode)
 let pentatonicBoxNoteCollection = [...basePentatonicBoxNoteCollection];
@@ -295,10 +296,11 @@ function transposeNoteForCapo(note, capoFrets) {
 
 // Update pentatonic collection based on capo position and scale mode
 function updatePentatonicCollectionForCapo() {
-  const baseCollection = currentScaleMode === 'full-major' 
-    ? baseFullMajorScaleNoteCollection 
-    : basePentatonicBoxNoteCollection;
-  
+  const baseCollection =
+    currentScaleMode === "full-major"
+      ? baseFullMajorScaleNoteCollection
+      : basePentatonicBoxNoteCollection;
+
   pentatonicBoxNoteCollection = baseCollection.map((note) =>
     transposeNoteForCapo(note, currentCapoPosition),
   );
@@ -307,22 +309,22 @@ function updatePentatonicCollectionForCapo() {
 // Set scale mode (pentatonic or full-major)
 function setScaleMode(mode) {
   currentScaleMode = mode;
-  
+
   // Update URL parameter
   updateURLParameter("scaleMode", mode);
-  
+
   // Update the note collection
   updatePentatonicCollectionForCapo();
-  
+
   // Regenerate tests with new scale
   generateTwelveTests();
-  
+
   // Update fretboard display
   updateFretboardScaleDisplay();
-  
+
   // Save state after scale mode change
   saveStateToStorage();
-  
+
   // Track scale mode change
   if (typeof gtag !== "undefined") {
     gtag("event", "scale_mode_change", {
@@ -335,30 +337,35 @@ function setScaleMode(mode) {
 
 // Update fretboard scale display (show/hide F# notes)
 function updateFretboardScaleDisplay() {
-  const fullMajorElements = document.querySelectorAll('.full-major');
-  const fullMajorLegend = document.querySelector('.full-major-legend');
-  
-  if (currentScaleMode === 'full-major') {
+  const fullMajorElements = document.querySelectorAll(".full-major");
+  const fullMajorLegend = document.querySelector(".full-major-legend");
+
+  if (currentScaleMode === "full-major") {
     // Show F# notes and legend
-    fullMajorElements.forEach(el => el.classList.remove('hidden'));
-    if (fullMajorLegend) fullMajorLegend.classList.remove('hidden');
-    
+    fullMajorElements.forEach((el) => el.classList.remove("hidden"));
+    if (fullMajorLegend) fullMajorLegend.classList.remove("hidden");
+
     // Update fretboard title
-    const fretboardContainer = document.querySelector('.fretboard-container h4');
+    const fretboardContainer = document.querySelector(
+      ".fretboard-container h4",
+    );
     if (fretboardContainer) {
       if (fretboardCapoPosition > 0) {
         fretboardContainer.textContent = `Full G Major Scale on Banjo Fretboard (Capo ${fretboardCapoPosition})`;
       } else {
-        fretboardContainer.textContent = "Full G Major Scale on Banjo Fretboard";
+        fretboardContainer.textContent =
+          "Full G Major Scale on Banjo Fretboard";
       }
     }
   } else {
     // Hide F# notes and legend
-    fullMajorElements.forEach(el => el.classList.add('hidden'));
-    if (fullMajorLegend) fullMajorLegend.classList.add('hidden');
-    
+    fullMajorElements.forEach((el) => el.classList.add("hidden"));
+    if (fullMajorLegend) fullMajorLegend.classList.add("hidden");
+
     // Update fretboard title
-    const fretboardContainer = document.querySelector('.fretboard-container h4');
+    const fretboardContainer = document.querySelector(
+      ".fretboard-container h4",
+    );
     if (fretboardContainer) {
       if (fretboardCapoPosition > 0) {
         fretboardContainer.textContent = `Pentatonic Scale on Banjo Fretboard (Capo ${fretboardCapoPosition})`;
@@ -441,7 +448,7 @@ function loadStateFromStorage() {
         // Update collections and reference note
         updatePentatonicCollectionForCapo();
         updateReferenceNoteForCapo();
-        
+
         // Update fretboard scale display
         updateFretboardScaleDisplay();
       }

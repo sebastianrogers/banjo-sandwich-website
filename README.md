@@ -116,12 +116,14 @@ The ear training module supports URL parameters for direct linking to specific c
 - `?instructions=false` - Hide instructions by default
 
 **Example URLs:**
+
 - `ear-training/pentatonic.html?scaleMode=full-major&instrument=banjo&capo=2`
 - `ear-training/pentatonic.html?scaleMode=pentatonic&instrument=synth&capo=0&instructions=false`
 
 ### State Persistence
 
 User preferences and progress are automatically saved to localStorage and restored on page reload:
+
 - Scale mode selection (pentatonic vs full major)
 - Instrument choice (synth vs banjo)
 - Capo position
