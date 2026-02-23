@@ -265,12 +265,30 @@
           updateFretboardDisplay();
           updateFretboardScaleDisplay();
         }, 100);
+
+        // Setup instructions details element
+        const instructionsDetails = document.getElementById(
+          "instructions-details",
+        );
+        if (instructionsDetails) {
+          // Check URL parameter for initial state
+          const urlParams = new URLSearchParams(window.location.search);
+          const instructionsParam = urlParams.get("instructions");
+          if (instructionsParam === "false") {
+            instructionsDetails.removeAttribute("open");
+          }
+
+          // Add event listener for toggle tracking
+          instructionsDetails.addEventListener("toggle", function () {
+            handleInstructionsToggle(this.open);
+          });
+        }
       });
 
       // Update URL parameter when instructions toggle changes
-      function updateInstructionsURLParameter(value) {
+      function updateInstructionsURLParameter(isOpen) {
         const url = new URL(window.location);
-        if (value) {
+        if (isOpen) {
           url.searchParams.delete("instructions"); // Remove param when showing (default state)
         } else {
           url.searchParams.set("instructions", "false");
@@ -278,37 +296,22 @@
         window.history.replaceState(null, "", url);
       }
 
-      // Toggle description visibility
-      function toggleDescription(isChecked) {
-        const container = document.querySelector(
-          ".pentatonic-training-container",
-        );
-        const label = document.querySelector(
-          'label[for="show-instructions-toggle"].checkbox-label',
-        );
-
-        if (isChecked) {
-          container.style.display = "block";
-          label.textContent = "Show";
-        } else {
-          container.style.display = "none";
-          label.textContent = "Show";
-        }
-
+      // Handle instructions toggle
+      function handleInstructionsToggle(isOpen) {
         // Update URL parameter
-        updateInstructionsURLParameter(isChecked);
+        updateInstructionsURLParameter(isOpen);
 
         // Save to local storage if the function is available
         if (typeof setInstructionsDisplay === "function") {
-          setInstructionsDisplay(isChecked);
+          setInstructionsDisplay(isOpen);
         }
 
         // Track toggle usage
         if (typeof gtag !== "undefined") {
-          gtag("event", "description_toggle", {
+          gtag("event", "instructions_toggle", {
             event_category: "ear_training",
-            event_label: isChecked ? "shown" : "hidden",
-            custom_parameter_1: "description_visibility",
+            event_label: isOpen ? "shown" : "hidden",
+            custom_parameter_1: "instructions_visibility",
           });
         }
       }
@@ -330,7 +333,12 @@
 
       <section class="events-section">
         <div class="container">
-          <div class="pentatonic-training-container">
+          <details
+            class="pentatonic-training-container"
+            id="instructions-details"
+            open
+          >
+            <summary>Instructions</summary>
             <div class="test-description">
               <p>
                 This ear training exercise helps you develop the ability to
@@ -461,7 +469,7 @@
                 your absolute pitch recognition.
               </p>
             </div>
-          </div>
+          </details>
 
           <div class="instrument-selection">
             <div class="control-group">
@@ -533,20 +541,6 @@
                   class="progress-indicator"
                 ></span>
               </div>
-            </div>
-
-            <div class="control-group">
-              <label for="show-instructions-toggle">Instructions:</label>
-              <input
-                type="checkbox"
-                id="show-instructions-toggle"
-                checked
-                onchange="toggleDescription(this.checked)"
-                title="Show or hide detailed instructions"
-              />
-              <label for="show-instructions-toggle" class="checkbox-label"
-                >Show</label
-              >
             </div>
           </div>
 

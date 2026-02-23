@@ -1091,7 +1091,7 @@ a {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
-  margin: 2rem 0;
+  margin: 0.5rem 0 2rem 0;
 }
 
 .test-description {
@@ -1325,4 +1325,58 @@ a {
     align-items: center;
     gap: 10px;
   }
+}
+
+/* Instructions details/summary styling */
+.pentatonic-training-container summary {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #2c5282;
+  cursor: pointer;
+  padding: 0.75rem 2rem 0.75rem 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+  transition: background-color 0.2s ease;
+  list-style: none;
+  position: relative;
+}
+
+.pentatonic-training-container summary::-webkit-details-marker {
+  display: none;
+}
+
+.pentatonic-training-container summary:hover {
+  background-color: #ebf4ff;
+}
+
+/* Custom arrow indicator */
+.pentatonic-training-container summary::after {
+  content: "▼";
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+  width: 1rem;
+  text-align: center;
+}
+
+.pentatonic-training-container[open] summary::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Adjust the test-description content when inside details */
+.pentatonic-training-container .test-description {
+  margin-top: 0;
+  border-radius: 0 0 8px 8px;
+  border-top: none;
+}
+
+/* When details is closed, round all corners of summary */
+.pentatonic-training-container:not([open]) summary {
+  border-radius: 8px;
 }
