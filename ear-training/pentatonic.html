@@ -261,7 +261,10 @@
       // Initialize fretboard display on page load
       document.addEventListener("DOMContentLoaded", function () {
         // Small delay to ensure elements are rendered
-        setTimeout(updateFretboardDisplay, 100);
+        setTimeout(() => {
+          updateFretboardDisplay();
+          updateFretboardScaleDisplay();
+        }, 100);
       });
 
       // Update URL parameter when instructions toggle changes
@@ -330,20 +333,17 @@
           <div class="pentatonic-training-container">
             <div class="test-description">
               <p>
-                This test helps you develop the ability to identify notes within
-                the pentatonic scale box pattern commonly used in banjo playing.
-                The pentatonic scale is fundamental to bluegrass and country
-                music, making it essential for banjo players to recognize these
-                notes by ear.
+                This ear training exercise helps you develop the ability to identify notes within 
+                the G major scale patterns commonly used in banjo playing. Choose between the 
+                traditional pentatonic scale (fundamental to bluegrass) or the full G major scale 
+                for more comprehensive training.
               </p>
 
               <p class="note-explanation">
-                <strong>Note:</strong> C4 is included in this exercise even
-                though it's not part of the G major pentatonic scale (G, A, B,
-                D, E). This note is commonly used as a passing tone in bluegrass
-                banjo playing and appears naturally on the 1st fret of the B
-                string in the standard pentatonic box pattern, making it
-                important for practical ear training.
+                <strong>Note:</strong> The pentatonic mode includes C4 even though it's not part 
+                of the G major pentatonic scale (G, A, B, D, E). This note commonly appears as 
+                a passing tone in bluegrass banjo playing and sits naturally on the 1st fret 
+                of the B string in the standard pentatonic box pattern.
               </p>
 
               <h4>How to Use This Test:</h4>
@@ -397,6 +397,27 @@
                 </li>
               </ul>
 
+              <h4>Scale Mode: Pentatonic vs Full G Major</h4>
+              <p>
+                Choose between two scale modes to customize your ear training:
+              </p>
+              <ul>
+                <li>
+                  <strong>Pentatonic Scale:</strong> The traditional G major pentatonic (G, A, B, D, E) plus C as a passing tone. This 6-note scale is fundamental to bluegrass banjo and creates a distinctive, open sound.
+                </li>
+                <li>
+                  <strong>Full G Major Scale:</strong> The complete 7-note major scale (G, A, B, C, D, E, F#). This includes all the pentatonic notes plus F# (the leading tone), providing more harmonic complexity and resolution.
+                </li>
+              </ul>
+              <p>
+                <strong>Key Differences:</strong>
+              </p>
+              <ul>
+                <li><strong>Pentatonic</strong> avoids half-steps, creating a more "safe" and traditional bluegrass sound</li>
+                <li><strong>Full Major Scale</strong> includes the F# leading tone, which creates stronger resolution to G and more classical harmonic movement</li>
+                <li>F# adds tension and "pull" toward the root note G, making melodies more directional</li>
+              </ul>
+
               <h4>Reference Note Feature</h4>
               <p>
                 When enabled, each test will automatically play the root note
@@ -425,6 +446,18 @@
           </div>
 
           <div class="instrument-selection">
+            <div class="control-group">
+              <label for="scale-mode-selector">Scale Mode:</label>
+              <select
+                id="scale-mode-selector"
+                onchange="setScaleMode(this.value)"
+                title="Choose between pentatonic (6 notes) or full major scale (7 notes)"
+              >
+                <option value="pentatonic" selected>Pentatonic Scale (G, A, B, C, D, E)</option>
+                <option value="full-major">Full G Major Scale (+ F#)</option>
+              </select>
+            </div>
+
             <div class="control-group">
               <label for="instrument-selector">Instrument:</label>
               <select
@@ -576,7 +609,15 @@
                   </button>
                 </div>
                 <div class="fret"></div>
-                <div class="fret"></div>
+                <div class="fret full-major hidden">
+                  <button
+                    class="note-btn"
+                    data-original-note="F#4"
+                    onclick="playNoteFromFretboard('F#4', 'D', 4)"
+                  >
+                    F#4
+                  </button>
+                </div>
                 <div class="fret"></div>
               </div>
 
@@ -657,7 +698,15 @@
                   </button>
                 </div>
                 <div class="fret"></div>
-                <div class="fret"></div>
+                <div class="fret full-major hidden">
+                  <button
+                    class="note-btn"
+                    data-original-note="F#3"
+                    onclick="playNoteFromFretboard('F#3', 'D-low', 4)"
+                  >
+                    F#3
+                  </button>
+                </div>
                 <div class="fret"></div>
               </div>
 
@@ -687,7 +736,11 @@
                 </span>
                 <span class="legend-item">
                   <span class="legend-dot passing"></span>
-                  Passing Tone
+                  Passing Tone (C)
+                </span>
+                <span class="legend-item full-major-legend hidden">
+                  <span class="legend-dot full-major"></span>
+                  Leading Tone (F#)
                 </span>
               </div>
             </div>

@@ -99,3 +99,32 @@ Replace `www.yourdomain.com` with your actual domain.
 - Official Banjo Sandwich branding and colors
 - Optimized for GitHub Pages hosting
 - Custom domain support
+- **Ear Training Module** with advanced state management:
+  - Pentatonic scale and full G major scale training
+  - URL parameter support for deep linking
+  - Persistent state via localStorage
+  - Capo transposition and instrument switching
+  - Progress tracking and statistics
+
+### Ear Training URL Parameters
+
+The ear training module supports URL parameters for direct linking to specific configurations:
+
+- `?scaleMode=pentatonic` or `?scaleMode=full-major` - Set scale mode
+- `?instrument=synth` or `?instrument=banjo` - Set instrument
+- `?capo=0-5` - Set capo position (0-5)
+- `?instructions=false` - Hide instructions by default
+
+**Example URLs:**
+- `ear-training/pentatonic.html?scaleMode=full-major&instrument=banjo&capo=2`
+- `ear-training/pentatonic.html?scaleMode=pentatonic&instrument=synth&capo=0&instructions=false`
+
+### State Persistence
+
+User preferences and progress are automatically saved to localStorage and restored on page reload:
+- Scale mode selection (pentatonic vs full major)
+- Instrument choice (synth vs banjo)
+- Capo position
+- Reference note setting
+- Instructions visibility
+- Test progress and statistics

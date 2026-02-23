@@ -3,12 +3,14 @@ let banjoSampler = new Tone.Sampler({
   urls: {
     D3: "D3.mp3",
     E3: "E3.mp3",
+    "F#3": "F-sharp3.mp3",
     G3: "G3.mp3",
     A3: "A3.mp3",
     B3: "B3.mp3",
     C4: "C4.mp3",
     D4: "D4.mp3",
     E4: "E4.mp3",
+    "F#4": "F-sharp4.mp3",
   },
   baseUrl: "/banjo/",
 }).toDestination();
@@ -47,7 +49,7 @@ function updateReferenceNoteForCapo() {
   );
 }
 
-// Initialize instrument from URL parameter
+// Initialize settings from URL parameters
 function initializeFromURL() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -61,6 +63,12 @@ function initializeFromURL() {
   if (capoParam && !isNaN(parseInt(capoParam))) {
     currentCapoPosition = parseInt(capoParam);
     updateCapoSelector();
+  }
+
+  const scaleModeParam = urlParams.get("scaleMode");
+  if (scaleModeParam === "pentatonic" || scaleModeParam === "full-major") {
+    currentScaleMode = scaleModeParam;
+    updateScaleModeSelector();
   }
 
   // Handle instructions parameter (overrides saved state)
@@ -92,6 +100,14 @@ function updateCapoSelector() {
   const selector = document.getElementById("capo-selector");
   if (selector) {
     selector.value = currentCapoPosition;
+  }
+}
+
+// Update the scale mode selector UI
+function updateScaleModeSelector() {
+  const selector = document.getElementById("scale-mode-selector");
+  if (selector) {
+    selector.value = currentScaleMode;
   }
 }
 
@@ -207,7 +223,24 @@ const basePentatonicBoxNoteCollection = [
   "E4",
 ];
 
-// Current pentatonic collection (updated based on capo)
+// Full G major scale notes (pentatonic + F#)
+const baseFullMajorScaleNoteCollection = [
+  "D3",
+  "E3",
+  "F#3",
+  "G3",
+  "A3",
+  "B3",
+  "C4",
+  "D4",
+  "E4",
+  "F#4",
+];
+
+// Current scale mode ('pentatonic' or 'full-major')
+let currentScaleMode = 'pentatonic';
+
+// Current pentatonic collection (updated based on capo and scale mode)
 let pentatonicBoxNoteCollection = [...basePentatonicBoxNoteCollection];
 
 // Function to transpose a note based on capo position
@@ -260,11 +293,80 @@ function transposeNoteForCapo(note, capoFrets) {
   return chromaticScale[newNoteIndex] + newOctave;
 }
 
-// Update pentatonic collection based on capo position
+// Update pentatonic collection based on capo position and scale mode
 function updatePentatonicCollectionForCapo() {
-  pentatonicBoxNoteCollection = basePentatonicBoxNoteCollection.map((note) =>
+  const baseCollection = currentScaleMode === 'full-major' 
+    ? baseFullMajorScaleNoteCollection 
+    : basePentatonicBoxNoteCollection;
+  
+  pentatonicBoxNoteCollection = baseCollection.map((note) =>
     transposeNoteForCapo(note, currentCapoPosition),
   );
+}
+
+// Set scale mode (pentatonic or full-major)
+function setScaleMode(mode) {
+  currentScaleMode = mode;
+  
+  // Update URL parameter
+  updateURLParameter("scaleMode", mode);
+  
+  // Update the note collection
+  updatePentatonicCollectionForCapo();
+  
+  // Regenerate tests with new scale
+  generateTwelveTests();
+  
+  // Update fretboard display
+  updateFretboardScaleDisplay();
+  
+  // Save state after scale mode change
+  saveStateToStorage();
+  
+  // Track scale mode change
+  if (typeof gtag !== "undefined") {
+    gtag("event", "scale_mode_change", {
+      event_category: "ear_training",
+      event_label: mode,
+      custom_parameter_1: "scale_mode_selection",
+    });
+  }
+}
+
+// Update fretboard scale display (show/hide F# notes)
+function updateFretboardScaleDisplay() {
+  const fullMajorElements = document.querySelectorAll('.full-major');
+  const fullMajorLegend = document.querySelector('.full-major-legend');
+  
+  if (currentScaleMode === 'full-major') {
+    // Show F# notes and legend
+    fullMajorElements.forEach(el => el.classList.remove('hidden'));
+    if (fullMajorLegend) fullMajorLegend.classList.remove('hidden');
+    
+    // Update fretboard title
+    const fretboardContainer = document.querySelector('.fretboard-container h4');
+    if (fretboardContainer) {
+      if (fretboardCapoPosition > 0) {
+        fretboardContainer.textContent = `Full G Major Scale on Banjo Fretboard (Capo ${fretboardCapoPosition})`;
+      } else {
+        fretboardContainer.textContent = "Full G Major Scale on Banjo Fretboard";
+      }
+    }
+  } else {
+    // Hide F# notes and legend
+    fullMajorElements.forEach(el => el.classList.add('hidden'));
+    if (fullMajorLegend) fullMajorLegend.classList.add('hidden');
+    
+    // Update fretboard title
+    const fretboardContainer = document.querySelector('.fretboard-container h4');
+    if (fretboardContainer) {
+      if (fretboardCapoPosition > 0) {
+        fretboardContainer.textContent = `Pentatonic Scale on Banjo Fretboard (Capo ${fretboardCapoPosition})`;
+      } else {
+        fretboardContainer.textContent = "Pentatonic Scale on Banjo Fretboard";
+      }
+    }
+  }
 }
 
 // Toggle reference note feature
@@ -320,6 +422,7 @@ function loadStateFromStorage() {
         currentInstrument = state.settings.instrument || currentInstrument;
         currentCapoPosition =
           state.settings.capoPosition || currentCapoPosition;
+        currentScaleMode = state.settings.scaleMode || currentScaleMode;
         useReferenceNote =
           state.settings.useReferenceNote !== undefined
             ? state.settings.useReferenceNote
@@ -332,11 +435,15 @@ function loadStateFromStorage() {
         // Update UI selectors
         updateInstrumentSelector();
         updateCapoSelector();
+        updateScaleModeSelector();
         updateInstructionsToggle();
 
         // Update collections and reference note
         updatePentatonicCollectionForCapo();
         updateReferenceNoteForCapo();
+        
+        // Update fretboard scale display
+        updateFretboardScaleDisplay();
       }
 
       // Restore test progress
@@ -365,6 +472,7 @@ function saveStateToStorage() {
       settings: {
         instrument: currentInstrument,
         capoPosition: currentCapoPosition,
+        scaleMode: currentScaleMode,
         useReferenceNote: useReferenceNote,
         showInstructions: showInstructions,
       },
@@ -900,6 +1008,9 @@ document.addEventListener("DOMContentLoaded", function () {
   setTimeout(() => {
     if (typeof updateFretboardDisplay === "function") {
       updateFretboardDisplay();
+    }
+    if (typeof updateFretboardScaleDisplay === "function") {
+      updateFretboardScaleDisplay();
     }
   }, 200);
 });

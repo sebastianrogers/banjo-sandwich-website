@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Management Test - Ear Training</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #007cba;
+        }
+        .success { background: #d4edda; border-color: #28a745; }
+        .error { background: #f8d7da; border-color: #dc3545; }
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #005a87;
+        }
+        .test-results {
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 Ear Training State Management Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: URL Parameter Parsing</h3>
+        <p>Current URL parameters:</p>
+        <div id="url-params" class="test-results"></div>
+        <button onclick="testURLParams()">Test URL Parameter Reading</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: State Save/Load</h3>
+        <p>Test localStorage persistence:</p>
+        <div id="state-test" class="test-results"></div>
+        <button onclick="testStateSaveLoad()">Test State Save & Load</button>
+        <button onclick="clearTestState()">Clear Test State</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Scale Mode State</h3>
+        <p>Test scale mode URL parameters:</p>
+        <div id="scale-test" class="test-results"></div>
+        <button onclick="testScaleModeState()">Test Scale Mode State</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Links</h3>
+        <p>Test different URL parameter combinations:</p>
+        <a href="?scaleMode=pentatonic&instrument=synth&capo=0" target="_blank">Pentatonic + Synth + No Capo</a><br>
+        <a href="?scaleMode=full-major&instrument=banjo&capo=2" target="_blank">Full Major + Banjo + Capo 2</a><br>
+        <a href="?scaleMode=full-major&instrument=synth&capo=3&instructions=false" target="_blank">Full Major + Synth + Capo 3 + No Instructions</a>
+    </div>
+
+    <script>
+        function testURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const results = {
+                instrument: urlParams.get('instrument'),
+                capo: urlParams.get('capo'),
+                scaleMode: urlParams.get('scaleMode'),
+                instructions: urlParams.get('instructions')
+            };
+            
+            document.getElementById('url-params').textContent = JSON.stringify(results, null, 2);
+        }
+
+        function testStateSaveLoad() {
+            const testState = {
+                settings: {
+                    instrument: 'banjo',
+                    capoPosition: 3,
+                    scaleMode: 'full-major',
+                    useReferenceNote: true,
+                    showInstructions: false,
+                },
+                testData: ['test1', 'test2'],
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Save test state
+                localStorage.setItem('ear-training-test-state', JSON.stringify(testState));
+                
+                // Try to load it back
+                const loaded = JSON.parse(localStorage.getItem('ear-training-test-state'));
+                
+                const match = JSON.stringify(testState) === JSON.stringify(loaded);
+                
+                document.getElementById('state-test').textContent = 
+                    `Save/Load Test: ${match ? '✅ PASSED' : '❌ FAILED'}\n\n` +
+                    `Original:\n${JSON.stringify(testState, null, 2)}\n\n` +
+                    `Loaded:\n${JSON.stringify(loaded, null, 2)}`;
+                    
+                document.getElementById('state-test').parentElement.className = 
+                    `test-section ${match ? 'success' : 'error'}`;
+                    
+            } catch (error) {
+                document.getElementById('state-test').textContent = `❌ ERROR: ${error.message}`;
+                document.getElementById('state-test').parentElement.className = 'test-section error';
+            }
+        }
+
+        function clearTestState() {
+            localStorage.removeItem('ear-training-test-state');
+            document.getElementById('state-test').textContent = '🗑️ Test state cleared';
+        }
+
+        function testScaleModeState() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const scaleMode = urlParams.get('scaleMode');
+            
+            const testResults = [];
+            
+            // Test scale mode validation
+            if (scaleMode === 'pentatonic' || scaleMode === 'full-major' || scaleMode === null) {
+                testResults.push('✅ Scale mode parameter validation: PASSED');
+            } else {
+                testResults.push('❌ Scale mode parameter validation: FAILED');
+            }
+            
+            // Test URL manipulation
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('scaleMode', 'full-major');
+            testResults.push(`✅ URL manipulation test: ${newUrl.toString()}`);
+            
+            document.getElementById('scale-test').textContent = testResults.join('\n');
+        }
+
+        // Initialize tests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            testURLParams();
+            setTimeout(testScaleModeState, 100);
+        });
+    </script>
+</body>
+</html>

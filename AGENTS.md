@@ -18,3 +18,7 @@ Examples:
 - `noteCollection` instead of `notes`
 - `pentatonicBoxNoteCollection` instead of `pentatonicBoxNotes`
 - `fullRangeNoteCollection` instead of `fullRangeNotes`
+
+### State
+
+State is to be supported by local storage and querystring

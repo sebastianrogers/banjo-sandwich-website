@@ -1178,6 +1178,22 @@ a {
   background: linear-gradient(to bottom, #ff9500 0%, #e67e22 50%, #c0711e 100%);
 }
 
+.fret.full-major {
+  background: linear-gradient(to bottom, #e74c3c 0%, #c0392b 50%, #a93226 100%);
+}
+
+.fret.full-major.hidden {
+  display: none;
+}
+
+.full-major-legend.hidden {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
 .note {
   font-size: 0.8rem;
   font-weight: bold;
@@ -1252,6 +1268,10 @@ a {
 
 .legend-dot.passing {
   background: linear-gradient(to bottom, #ff9500 0%, #c0711e 100%);
+}
+
+.legend-dot.full-major {
+  background: linear-gradient(to bottom, #e74c3c 0%, #a93226 100%);
 }
 
 @media (max-width: 1024px) {
