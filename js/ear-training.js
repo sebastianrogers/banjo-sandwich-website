@@ -761,6 +761,11 @@ function createPentatonicTestLayout(testIndex, test) {
           transposedNotes["F#3"],
         ],
       },
+      {
+        name: "G-fifth",
+        label: "g (5th)",
+        notes: [null, null, null, null, transposedNotes.G4],
+      },
     ];
   } else {
     strings = [
@@ -784,11 +789,17 @@ function createPentatonicTestLayout(testIndex, test) {
         label: "D (4th)",
         notes: [transposedNotes.D3, null, transposedNotes.E3],
       },
+      {
+        name: "G-fifth",
+        label: "g (5th)",
+        notes: [null, null, null],
+      },
     ];
   }
 
   strings.forEach((string) => {
-    layout += `<div class="test-string-row ${currentScaleMode === "full-major" ? "full-major-layout" : ""}">`;
+    const fifthStringClass = string.name === "G-fifth" ? " fifth-string" : "";
+    layout += `<div class="test-string-row ${currentScaleMode === "full-major" ? "full-major-layout" : ""}${fifthStringClass}">`;
     layout += `<span class="test-string-label">${string.label}</span>`;
 
     string.notes.forEach((note, fretIndex) => {
