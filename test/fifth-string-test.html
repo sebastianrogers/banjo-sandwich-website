@@ -1,74 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fifth String Test</title>
-    <link rel="stylesheet" href="../styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
     <div class="main-content">
-        <h1>Fifth String Test</h1>
-        <p>This page tests if the 5th string (g) appears in both pentatonic and full-major modes.</p>
-        
-        <h2>Pentatonic Mode</h2>
-        <div id="pentatonic-test" class="test-container">
-            <!-- Test content will be generated here -->
-        </div>
-        
-        <h2>Full Major Mode</h2>
-        <div id="full-major-test" class="test-container">
-            <!-- Test content will be generated here -->
-        </div>
+      <h1>Fifth String Test</h1>
+      <p>
+        This page tests if the 5th string (g) appears in both pentatonic and
+        full-major modes.
+      </p>
+
+      <h2>Pentatonic Mode</h2>
+      <div id="pentatonic-test" class="test-container">
+        <!-- Test content will be generated here -->
+      </div>
+
+      <h2>Full Major Mode</h2>
+      <div id="full-major-test" class="test-container">
+        <!-- Test content will be generated here -->
+      </div>
     </div>
 
     <script src="https://unpkg.com/tone"></script>
     <script src="../js/ear-training.js"></script>
     <script>
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up a test environment
-            currentScaleMode = 'pentatonic';
-            currentCapoPosition = 0;
-            
-            // Generate a test to see the fretboard layout
-            generateTwelveTests();
-            
-            if (tests.length > 0) {
-                const testIndex = 0;
-                const testLayout = generateTestLayout(tests[testIndex], testIndex);
-                document.getElementById('pentatonic-test').innerHTML = testLayout;
-            }
-            
-            // Now test full-major mode
-            currentScaleMode = 'full-major';
-            generateTwelveTests();
-            
-            if (tests.length > 0) {
-                const testIndex = 0;
-                const testLayout = generateTestLayout(tests[testIndex], testIndex);
-                document.getElementById('full-major-test').innerHTML = testLayout;
-            }
-            
-            // Check if 5th string is present
-            const pentatonicFifth = document.querySelector('#pentatonic-test .fifth-string');
-            const fullMajorFifth = document.querySelector('#full-major-test .fifth-string');
-            
-            console.log('Pentatonic 5th string found:', pentatonicFifth ? 'YES' : 'NO');
-            console.log('Full-major 5th string found:', fullMajorFifth ? 'YES' : 'NO');
-            
-            // Add result indicators
-            const pentatonicResult = pentatonicFifth ? 
-                '<p style="color: green;">✅ 5th string found in pentatonic mode</p>' :
-                '<p style="color: red;">❌ 5th string NOT found in pentatonic mode</p>';
-                
-            const fullMajorResult = fullMajorFifth ? 
-                '<p style="color: green;">✅ 5th string found in full-major mode</p>' :
-                '<p style="color: red;">❌ 5th string NOT found in full-major mode</p>';
-            
-            document.getElementById('pentatonic-test').insertAdjacentHTML('afterend', pentatonicResult);
-            document.getElementById('full-major-test').insertAdjacentHTML('afterend', fullMajorResult);
-        });
+      // Initialize the app
+      document.addEventListener("DOMContentLoaded", function () {
+        // Set up a test environment
+        currentScaleMode = "pentatonic";
+        currentCapoPosition = 0;
+
+        // Generate a test to see the fretboard layout
+        generateTwelveTests();
+
+        if (tests.length > 0) {
+          const testIndex = 0;
+          const testLayout = generateTestLayout(tests[testIndex], testIndex);
+          document.getElementById("pentatonic-test").innerHTML = testLayout;
+        }
+
+        // Now test full-major mode
+        currentScaleMode = "full-major";
+        generateTwelveTests();
+
+        if (tests.length > 0) {
+          const testIndex = 0;
+          const testLayout = generateTestLayout(tests[testIndex], testIndex);
+          document.getElementById("full-major-test").innerHTML = testLayout;
+        }
+
+        // Check if 5th string is present
+        const pentatonicFifth = document.querySelector(
+          "#pentatonic-test .fifth-string",
+        );
+        const fullMajorFifth = document.querySelector(
+          "#full-major-test .fifth-string",
+        );
+
+        console.log(
+          "Pentatonic 5th string found:",
+          pentatonicFifth ? "YES" : "NO",
+        );
+        console.log(
+          "Full-major 5th string found:",
+          fullMajorFifth ? "YES" : "NO",
+        );
+
+        // Add result indicators
+        const pentatonicResult = pentatonicFifth
+          ? '<p style="color: green;">✅ 5th string found in pentatonic mode</p>'
+          : '<p style="color: red;">❌ 5th string NOT found in pentatonic mode</p>';
+
+        const fullMajorResult = fullMajorFifth
+          ? '<p style="color: green;">✅ 5th string found in full-major mode</p>'
+          : '<p style="color: red;">❌ 5th string NOT found in full-major mode</p>';
+
+        document
+          .getElementById("pentatonic-test")
+          .insertAdjacentHTML("afterend", pentatonicResult);
+        document
+          .getElementById("full-major-test")
+          .insertAdjacentHTML("afterend", fullMajorResult);
+      });
     </script>
-</body>
+  </body>
 </html>
