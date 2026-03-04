@@ -1,8 +1,35 @@
-/* Reset and base styles */
+/* =============================================================
+   BANJO SANDWICH WEBSITE — MAIN STYLESHEET
+
+   Sections:
+     1.  Reset & Base
+     2.  Layout
+     3.  Header & Navigation
+     4.  Hero Section
+     5.  About Section
+     6.  Members Section
+     7.  Events Section
+     8.  Exercises Section
+     9.  Contact & Footer
+     10. Ear Training — Buttons & Feedback
+     11. Ear Training — Test Items & Fretboard Grid
+     12. Ear Training — Instrument Selection & Controls
+     13. Responsive Design
+     14. Banjo Fretboard
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   1. RESET & BASE
+   ------------------------------------------------------------- */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -12,13 +39,25 @@ body {
   background-color: #f7f9fc;
 }
 
+/* All links inherit a consistent hover transition */
+a {
+  transition: all 0.3s ease;
+}
+
+/* -------------------------------------------------------------
+   2. LAYOUT
+   ------------------------------------------------------------- */
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* Header and Navigation */
+/* -------------------------------------------------------------
+   3. HEADER & NAVIGATION
+   ------------------------------------------------------------- */
+
 header {
   background-color: #1a365d;
   color: #ffffff;
@@ -121,12 +160,15 @@ nav {
   font-size: 24px;
 }
 
-/* Main content */
+/* Main content area sits below the fixed header */
 main {
-  margin-top: 0px;
+  margin-top: 0;
 }
 
-/* Hero section */
+/* -------------------------------------------------------------
+   4. HERO SECTION
+   ------------------------------------------------------------- */
+
 .hero {
   background: linear-gradient(135deg, #2c5282 0%, #0f172a 100%);
   background-color: #0f172a;
@@ -173,10 +215,14 @@ main {
   margin-bottom: 1rem;
 }
 
-/* Sections */
+/* Default vertical rhythm for all page sections */
 section {
   padding: 4rem 0;
 }
+
+/* -------------------------------------------------------------
+   5. ABOUT SECTION
+   ------------------------------------------------------------- */
 
 .about {
   background-image: url("asset/57a.jpg");
@@ -222,7 +268,10 @@ section {
   margin-right: auto;
 }
 
-/* Members section */
+/* -------------------------------------------------------------
+   6. MEMBERS SECTION
+   ------------------------------------------------------------- */
+
 .members {
   background-color: #ebf4ff;
 }
@@ -284,7 +333,7 @@ section {
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-/* Individual member background images */
+/* Per-member portrait background images */
 .julie-member .member-background {
   background-image: url("asset/julie.jpg");
 }
@@ -313,7 +362,10 @@ section {
   opacity: 0.4;
 }
 
-/* Events section */
+/* -------------------------------------------------------------
+   7. EVENTS SECTION
+   ------------------------------------------------------------- */
+
 .events-section {
   background-color: #f7f9fc;
 }
@@ -377,7 +429,10 @@ section {
   line-height: 1.6;
 }
 
-/* Exercise cards */
+/* -------------------------------------------------------------
+   8. EXERCISES SECTION
+   ------------------------------------------------------------- */
+
 .exercises-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -429,7 +484,10 @@ section {
   text-decoration: none;
 }
 
-/* Contact section */
+/* -------------------------------------------------------------
+   9. CONTACT & FOOTER
+   ------------------------------------------------------------- */
+
 .contact {
   background-color: #1a365d;
   color: #ffffff;
@@ -463,7 +521,11 @@ footer {
   padding: 2rem 0;
 }
 
-/* Button styles */
+/* -------------------------------------------------------------
+   10. EAR TRAINING — BUTTONS & FEEDBACK
+   ------------------------------------------------------------- */
+
+/* Primary action button (play interval) */
 .interval-btn {
   background-color: #8b4513;
   color: white;
@@ -488,7 +550,7 @@ footer {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Feedback indicator styles */
+/* Per-question feedback indicator */
 .feedback-indicator {
   margin: 20px 0;
   text-align: center;
@@ -544,7 +606,11 @@ footer {
   color: white;
 }
 
-/* Tests container styles */
+/* -------------------------------------------------------------
+   11. EAR TRAINING — TEST ITEMS & FRETBOARD GRID
+   ------------------------------------------------------------- */
+
+/* Grid of individual test cards */
 .tests-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -552,7 +618,7 @@ footer {
   margin-top: 30px;
 }
 
-/* Allow tests to use full width on larger screens - ear-training page only */
+/* On large screens, allow ear-training tests to expand beyond the default container */
 @media (min-width: 1200px) {
   .ear-training-page .events-section .container {
     max-width: none;
@@ -796,7 +862,7 @@ footer {
   cursor: default;
 }
 
-/* Capo indicator styling for test buttons */
+/* Small capo label that sits inside fretboard buttons */
 .test-note-btn-fretboard small {
   font-size: 8px;
   color: inherit;
@@ -876,6 +942,10 @@ footer {
   color: white !important;
 }
 
+/* -------------------------------------------------------------
+   12. EAR TRAINING — INSTRUMENT SELECTION & CONTROLS
+   ------------------------------------------------------------- */
+
 .instrument-selection {
   text-align: center;
   margin: 20px 0;
@@ -928,7 +998,7 @@ footer {
   accent-color: #8b4513;
 }
 
-/* Progress controls */
+/* Session progress controls (reset / fresh start) */
 .progress-controls {
   display: flex;
   align-items: center;
@@ -1048,7 +1118,10 @@ footer {
   color: #8b4513;
 }
 
-/* Responsive design */
+/* -------------------------------------------------------------
+   13. RESPONSIVE DESIGN
+   ------------------------------------------------------------- */
+
 @media (max-width: 768px) {
   .nav-links {
     flex-direction: column;
@@ -1084,17 +1157,10 @@ footer {
   }
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
+/* -------------------------------------------------------------
+   14. BANJO FRETBOARD
+   ------------------------------------------------------------- */
 
-/* Link hover effects */
-a {
-  transition: all 0.3s ease;
-}
-
-/* Banjo Fretboard Styles */
 .pentatonic-training-container {
   display: flex;
   gap: 2rem;
@@ -1335,7 +1401,7 @@ a {
   }
 }
 
-/* Instructions details/summary styling */
+/* Collapsible instructions panel inside the fretboard training container */
 .pentatonic-training-container summary {
   font-size: 1.1rem;
   font-weight: 500;
