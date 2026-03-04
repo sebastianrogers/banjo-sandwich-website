@@ -141,6 +141,13 @@ main {
   height: auto;
 }
 
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .hero-content h2 {
   font-size: 3rem;
   margin-bottom: 1rem;
@@ -163,6 +170,7 @@ main {
 .hero-description p {
   font-size: 1.1rem;
   line-height: 1.8;
+  margin-bottom: 1rem;
 }
 
 /* Sections */
@@ -1379,4 +1387,11 @@ a {
 /* When details is closed, round all corners of summary */
 .pentatonic-training-container:not([open]) summary {
   border-radius: 8px;
+}
+
+
+.musician-note {
+  font-size: 0.95em;
+  opacity: 0.8;
+  margin-top: 10px;
 }
