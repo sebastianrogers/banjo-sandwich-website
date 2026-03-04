@@ -95,6 +95,7 @@ Replace `www.yourdomain.com` with your actual domain.
 ## Features
 
 - Responsive design that works on mobile and desktop
+- Collapsible hamburger navigation menu on mobile (≤768px)
 - Band member showcase
 - Official Banjo Sandwich branding and colors
 - Optimized for GitHub Pages hosting
