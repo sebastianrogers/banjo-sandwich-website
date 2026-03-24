@@ -648,7 +648,7 @@ footer {
 /* Grid of individual test cards */
 .tests-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
   gap: 15px;
   margin-top: 30px;
 }
@@ -756,7 +756,7 @@ footer {
 
 .test-fret-numbers {
   display: grid;
-  grid-template-columns: 55px repeat(3, 50px);
+  grid-template-columns: 55px repeat(6, 50px);
   gap: 3px;
   margin-bottom: 8px;
   text-align: center;
@@ -764,7 +764,7 @@ footer {
 
 /* Expanded layout for full major scale mode */
 .test-fret-numbers.full-major-layout {
-  grid-template-columns: 55px repeat(5, 50px);
+  grid-template-columns: 55px repeat(6, 50px);
 }
 
 .test-fret-label {
@@ -776,7 +776,7 @@ footer {
 
 .test-string-row {
   display: grid;
-  grid-template-columns: 55px repeat(3, 50px);
+  grid-template-columns: 55px repeat(6, 50px);
   gap: 3px;
   margin-bottom: 6px;
   align-items: center;
@@ -784,7 +784,7 @@ footer {
 
 /* Expanded layout for full major scale mode */
 .test-string-row.full-major-layout {
-  grid-template-columns: 55px repeat(5, 50px);
+  grid-template-columns: 55px repeat(6, 50px);
 }
 
 .test-string-label {

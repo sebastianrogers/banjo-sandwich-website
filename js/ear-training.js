@@ -702,25 +702,17 @@ function createPentatonicTestLayout(testIndex, test) {
     transposedNotes[key] = transposeNoteForCapo(note, currentCapoPosition);
   }
 
-  // Determine fret layout based on scale mode
-  const fretCount = currentScaleMode === "full-major" ? 5 : 3;
-
   let layout = `
-    <div class="test-fretboard-layout ${currentScaleMode === "full-major" ? "full-major-layout" : ""}">
+    <div class="test-fretboard-layout full-major-layout">
       <!-- Test layout headers -->
-      <div class="test-fret-numbers ${currentScaleMode === "full-major" ? "full-major-layout" : ""}">
+      <div class="test-fret-numbers full-major-layout">
         <span class="test-fret-label">String</span>
         <span class="test-fret-label">${currentCapoPosition > 0 ? "Capo" : "Open"}</span>
         <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 1 : "1"}</span>
-        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 2 : "2"}</span>`;
-
-  if (currentScaleMode === "full-major") {
-    layout += `
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 2 : "2"}</span>
         <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 3 : "3"}</span>
-        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 4 : "4"}</span>`;
-  }
-
-  layout += `
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 4 : "4"}</span>
+        <span class="test-fret-label">${currentCapoPosition > 0 ? currentCapoPosition + 5 : "5"}</span>
       </div>
   `;
 
@@ -738,17 +730,18 @@ function createPentatonicTestLayout(testIndex, test) {
           transposedNotes.E4,
           null,
           transposedNotes["F#4"],
+          transposedNotes.G4,
         ],
       },
       {
         name: "B",
         label: "B (2nd)",
-        notes: [transposedNotes.B3, transposedNotes.C4, null, null, null],
+        notes: [transposedNotes.B3, transposedNotes.C4, null, null, null, null],
       },
       {
         name: "G",
         label: "G (3rd)",
-        notes: [transposedNotes.G3, null, transposedNotes.A3, null, null],
+        notes: [transposedNotes.G3, null, transposedNotes.A3, null, null, null],
       },
       {
         name: "D-low",
@@ -759,12 +752,8 @@ function createPentatonicTestLayout(testIndex, test) {
           transposedNotes.E3,
           null,
           transposedNotes["F#3"],
+          transposedNotes.G3,
         ],
-      },
-      {
-        name: "G-fifth",
-        label: "g (5th)",
-        notes: [null, null, null, null, transposedNotes.G4],
       },
     ];
   } else {
@@ -772,34 +761,42 @@ function createPentatonicTestLayout(testIndex, test) {
       {
         name: "D",
         label: "D (1st)",
-        notes: [transposedNotes.D4, null, transposedNotes.E4],
+        notes: [
+          transposedNotes.D4,
+          null,
+          transposedNotes.E4,
+          null,
+          null,
+          transposedNotes.G4,
+        ],
       },
       {
         name: "B",
         label: "B (2nd)",
-        notes: [transposedNotes.B3, transposedNotes.C4, null],
+        notes: [transposedNotes.B3, transposedNotes.C4, null, null, null, null],
       },
       {
         name: "G",
         label: "G (3rd)",
-        notes: [transposedNotes.G3, null, transposedNotes.A3],
+        notes: [transposedNotes.G3, null, transposedNotes.A3, null, null, null],
       },
       {
         name: "D-low",
         label: "D (4th)",
-        notes: [transposedNotes.D3, null, transposedNotes.E3],
-      },
-      {
-        name: "G-fifth",
-        label: "g (5th)",
-        notes: [null, null, null],
+        notes: [
+          transposedNotes.D3,
+          null,
+          transposedNotes.E3,
+          null,
+          null,
+          transposedNotes.G3,
+        ],
       },
     ];
   }
 
   strings.forEach((string) => {
-    const fifthStringClass = string.name === "G-fifth" ? " fifth-string" : "";
-    layout += `<div class="test-string-row ${currentScaleMode === "full-major" ? "full-major-layout" : ""}${fifthStringClass}">`;
+    layout += `<div class="test-string-row full-major-layout">`;
     layout += `<span class="test-string-label">${string.label}</span>`;
 
     string.notes.forEach((note, fretIndex) => {

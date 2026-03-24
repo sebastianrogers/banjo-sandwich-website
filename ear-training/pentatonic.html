@@ -631,7 +631,15 @@
                     F#4
                   </button>
                 </div>
-                <div class="fret"></div>
+                <div class="fret pentatonic">
+                  <button
+                    class="note-btn"
+                    data-original-note="G4"
+                    onclick="playNoteFromFretboard('G4', 'D', 5)"
+                  >
+                    G4
+                  </button>
+                </div>
               </div>
 
               <!-- String 2 (B) -->
@@ -720,24 +728,13 @@
                     F#3
                   </button>
                 </div>
-                <div class="fret"></div>
-              </div>
-
-              <!-- String 5 (G) - 5th string (shorter) -->
-              <div class="string-row fifth-string">
-                <span class="string-label">g</span>
-                <div class="fret empty"></div>
-                <div class="fret empty"></div>
-                <div class="fret empty"></div>
-                <div class="fret empty"></div>
-                <div class="fret empty"></div>
-                <div class="fret">
+                <div class="fret pentatonic">
                   <button
                     class="note-btn"
-                    data-original-note="G4"
-                    onclick="playNoteFromFretboard('G4', 'g', 5)"
+                    data-original-note="G3"
+                    onclick="playNoteFromFretboard('G3', 'D-low', 5)"
                   >
-                    G4
+                    G3
                   </button>
                 </div>
               </div>
