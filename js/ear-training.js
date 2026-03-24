@@ -659,7 +659,7 @@ function renderTests() {
       
       <div class="test-feedback">
         <span id="status-indicator-${index}" class="status-${test.status}">
-          ${getStatusText(test.status)}
+          ${getStatusText(test.status, test.noteRelationship)}
         </span>
       </div>
       
@@ -914,10 +914,45 @@ function createPentatonicTestLayout(testIndex, test) {
   return layout;
 }
 
-function getStatusText(status) {
+const INTERVAL_NAMES = [
+  null, // index 0 handled separately as Unison or Octave
+  "Minor 2nd",
+  "Major 2nd",
+  "Minor 3rd",
+  "Major 3rd",
+  "Perfect 4th",
+  "Tritone",
+  "Perfect 5th",
+  "Minor 6th",
+  "Major 6th",
+  "Minor 7th",
+  "Major 7th",
+];
+
+function getNoteInterval(testNote, rootNote) {
+  const chromaticScale = [
+    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+  ];
+  const noteRegex = /([A-G][#b]?)([0-9]+)/;
+  const rootMatch = rootNote.match(noteRegex);
+  const testMatch = testNote.match(noteRegex);
+  if (!rootMatch || !testMatch) return null;
+
+  const rootIndex = chromaticScale.indexOf(rootMatch[1]);
+  const testIndex = chromaticScale.indexOf(testMatch[1]);
+  if (rootIndex === -1 || testIndex === -1) return null;
+
+  const semitones = (testIndex - rootIndex + 12) % 12;
+  if (semitones === 0) {
+    return parseInt(testMatch[2]) === parseInt(rootMatch[2]) ? "Unison" : "Octave";
+  }
+  return INTERVAL_NAMES[semitones];
+}
+
+function getStatusText(status, noteRelationship) {
   switch (status) {
     case "correct":
-      return "Correct!";
+      return noteRelationship ? `Correct! (${noteRelationship})` : "Correct!";
     case "incorrect":
       return "Incorrect";
     case "not-tried":
@@ -1042,6 +1077,7 @@ function selectTestNote(testIndex, note) {
   if (note === test.targetNote) {
     test.status = "correct";
     test.guessedCorrectly = true;
+    test.noteRelationship = getNoteInterval(note, currentReferenceNote);
     overallCorrectGuesses++;
 
     // Add green feedback to the correct button
