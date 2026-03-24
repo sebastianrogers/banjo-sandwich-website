@@ -821,6 +821,16 @@ footer {
   border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
+.test-fret.duplicate {
+  background-color: rgba(40, 167, 69, 0.04);
+  border: 1px dashed rgba(40, 167, 69, 0.2);
+}
+
+.test-fret.duplicate.passing {
+  background-color: rgba(255, 193, 7, 0.04);
+  border: 1px dashed rgba(255, 193, 7, 0.2);
+}
+
 .test-fret.empty {
   background: none;
   border: 1px solid transparent;
@@ -876,6 +886,11 @@ footer {
 
 .test-note-btn-fretboard.passing-tone {
   border-color: #ffc107;
+}
+
+.test-note-btn-fretboard.duplicate-note {
+  border-style: dashed;
+  opacity: 0.65;
 }
 
 .test-note-btn-fretboard.passing-tone:hover {
@@ -940,6 +955,11 @@ footer {
 .test-legend-dot.full-major {
   background-color: rgba(231, 76, 60, 0.3);
   border: 1px solid rgba(231, 76, 60, 0.5);
+}
+
+.test-legend-dot.duplicate {
+  background-color: rgba(40, 167, 69, 0.15);
+  border: 1px dashed rgba(40, 167, 69, 0.35);
 }
 
 .test-note-btn {
@@ -1341,6 +1361,14 @@ footer {
   display: none;
 }
 
+.fret.duplicate {
+  background: linear-gradient(to bottom, #8cb8ee 0%, #6a9ccf 50%, #5585a8 100%);
+}
+
+.fret.duplicate.passing {
+  background: linear-gradient(to bottom, #ffcc80 0%, #f4a840 50%, #cf8530 100%);
+}
+
 .full-major-legend.hidden {
   display: none;
 }
@@ -1427,6 +1455,10 @@ footer {
 
 .legend-dot.full-major {
   background: linear-gradient(to bottom, #e74c3c 0%, #a93226 100%);
+}
+
+.legend-dot.duplicate {
+  background: linear-gradient(to bottom, #8cb8ee 0%, #5585a8 100%);
 }
 
 @media (max-width: 1024px) {

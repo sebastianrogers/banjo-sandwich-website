@@ -732,16 +732,33 @@ function createPentatonicTestLayout(testIndex, test) {
           transposedNotes["F#4"],
           transposedNotes.G4,
         ],
+        duplicates: [false, false, false, false, false, false],
       },
       {
         name: "B",
         label: "B (2nd)",
-        notes: [transposedNotes.B3, transposedNotes.C4, null, null, null, null],
+        notes: [
+          transposedNotes.B3,
+          transposedNotes.C4,
+          null,
+          transposedNotes.D4,
+          null,
+          transposedNotes.E4,
+        ],
+        duplicates: [false, false, false, true, false, true],
       },
       {
         name: "G",
         label: "G (3rd)",
-        notes: [transposedNotes.G3, null, transposedNotes.A3, null, null, null],
+        notes: [
+          transposedNotes.G3,
+          null,
+          transposedNotes.A3,
+          null,
+          transposedNotes.B3,
+          transposedNotes.C4,
+        ],
+        duplicates: [false, false, false, false, true, true],
       },
       {
         name: "D-low",
@@ -754,6 +771,7 @@ function createPentatonicTestLayout(testIndex, test) {
           transposedNotes["F#3"],
           transposedNotes.G3,
         ],
+        duplicates: [false, false, false, false, false, true],
       },
     ];
   } else {
@@ -769,16 +787,33 @@ function createPentatonicTestLayout(testIndex, test) {
           null,
           transposedNotes.G4,
         ],
+        duplicates: [false, false, false, false, false, false],
       },
       {
         name: "B",
         label: "B (2nd)",
-        notes: [transposedNotes.B3, transposedNotes.C4, null, null, null, null],
+        notes: [
+          transposedNotes.B3,
+          transposedNotes.C4,
+          null,
+          transposedNotes.D4,
+          null,
+          transposedNotes.E4,
+        ],
+        duplicates: [false, false, false, true, false, true],
       },
       {
         name: "G",
         label: "G (3rd)",
-        notes: [transposedNotes.G3, null, transposedNotes.A3, null, null, null],
+        notes: [
+          transposedNotes.G3,
+          null,
+          transposedNotes.A3,
+          null,
+          transposedNotes.B3,
+          transposedNotes.C4,
+        ],
+        duplicates: [false, false, false, false, true, true],
       },
       {
         name: "D-low",
@@ -791,6 +826,7 @@ function createPentatonicTestLayout(testIndex, test) {
           null,
           transposedNotes.G3,
         ],
+        duplicates: [false, false, false, false, false, true],
       },
     ];
   }
@@ -800,6 +836,7 @@ function createPentatonicTestLayout(testIndex, test) {
     layout += `<span class="test-string-label">${string.label}</span>`;
 
     string.notes.forEach((note, fretIndex) => {
+      const isDuplicate = string.duplicates?.[fretIndex] ?? false;
       if (note && pentatonicBoxNoteCollection.includes(note)) {
         // Check note type for styling
         const isPassingTone = note === transposedNotes.C4;
@@ -816,6 +853,11 @@ function createPentatonicTestLayout(testIndex, test) {
         } else if (isFullMajorNote) {
           noteClass = "full-major-note";
           fretClass = "full-major";
+        }
+
+        if (isDuplicate) {
+          fretClass = isPassingTone ? "duplicate passing" : "duplicate";
+          noteClass += " duplicate-note";
         }
 
         const buttonClass = `test-note-btn-fretboard ${test.buttonFeedback && test.buttonFeedback[note] ? test.buttonFeedback[note] : ""} ${noteClass}`;
@@ -861,6 +903,10 @@ function createPentatonicTestLayout(testIndex, test) {
   }
 
   layout += `
+        <span class="test-legend-item">
+          <span class="test-legend-dot duplicate"></span>
+          Duplicate Position
+        </span>
       </div>
     </div>
   `;

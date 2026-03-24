@@ -664,9 +664,25 @@
                   </button>
                 </div>
                 <div class="fret"></div>
+                <div class="fret duplicate">
+                  <button
+                    class="note-btn"
+                    data-original-note="D4"
+                    onclick="playNoteFromFretboard('D4', 'B', 3)"
+                  >
+                    D4
+                  </button>
+                </div>
                 <div class="fret"></div>
-                <div class="fret"></div>
-                <div class="fret"></div>
+                <div class="fret duplicate">
+                  <button
+                    class="note-btn"
+                    data-original-note="E4"
+                    onclick="playNoteFromFretboard('E4', 'B', 5)"
+                  >
+                    E4
+                  </button>
+                </div>
               </div>
 
               <!-- String 3 (G) -->
@@ -692,8 +708,24 @@
                   </button>
                 </div>
                 <div class="fret"></div>
-                <div class="fret"></div>
-                <div class="fret"></div>
+                <div class="fret duplicate">
+                  <button
+                    class="note-btn"
+                    data-original-note="B3"
+                    onclick="playNoteFromFretboard('B3', 'G', 4)"
+                  >
+                    B3
+                  </button>
+                </div>
+                <div class="fret duplicate passing">
+                  <button
+                    class="note-btn"
+                    data-original-note="C4"
+                    onclick="playNoteFromFretboard('C4', 'G', 5)"
+                  >
+                    C4
+                  </button>
+                </div>
               </div>
 
               <!-- String 4 (D) -->
@@ -728,7 +760,7 @@
                     F#3
                   </button>
                 </div>
-                <div class="fret pentatonic">
+                <div class="fret duplicate">
                   <button
                     class="note-btn"
                     data-original-note="G3"
@@ -751,6 +783,10 @@
                 <span class="legend-item full-major-legend hidden">
                   <span class="legend-dot full-major"></span>
                   Leading Tone (F#)
+                </span>
+                <span class="legend-item">
+                  <span class="legend-dot duplicate"></span>
+                  Duplicate Position
                 </span>
               </div>
             </div>
