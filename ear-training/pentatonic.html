@@ -264,6 +264,9 @@
         setTimeout(() => {
           updateFretboardDisplay();
           updateFretboardScaleDisplay();
+          if (typeof applyNoteNamesDisplay === "function") {
+            applyNoteNamesDisplay();
+          }
         }, 100);
 
         // Setup instructions details element
@@ -271,10 +274,36 @@
           "instructions-details",
         );
         if (instructionsDetails) {
-          // Check URL parameter for initial state
+          // Priority: URL param > localStorage > default (open)
           const urlParams = new URLSearchParams(window.location.search);
           const instructionsParam = urlParams.get("instructions");
-          if (instructionsParam === "false") {
+
+          let shouldOpen = true; // default: show instructions
+
+          if (instructionsParam !== null) {
+            // URL param takes highest priority
+            shouldOpen = instructionsParam !== "false";
+          } else {
+            // Fall back to localStorage
+            try {
+              const savedState = localStorage.getItem("ear-training-state");
+              if (savedState) {
+                const state = JSON.parse(savedState);
+                if (
+                  state.settings &&
+                  state.settings.showInstructions !== undefined
+                ) {
+                  shouldOpen = state.settings.showInstructions;
+                }
+              }
+            } catch (e) {
+              // Use default if localStorage cannot be read
+            }
+          }
+
+          if (shouldOpen) {
+            instructionsDetails.setAttribute("open", "");
+          } else {
             instructionsDetails.removeAttribute("open");
           }
 
@@ -336,6 +365,7 @@
           <details
             class="pentatonic-training-container"
             id="instructions-details"
+            open
           >
             <summary>Instructions</summary>
             <div class="test-description">
@@ -355,199 +385,389 @@
                 in the standard pentatonic box pattern.
               </p>
 
-              <h4>How to Use This Test:</h4>
-              <ul>
-                <li>
-                  <strong>Click "Play Note"</strong> to hear a random note from
-                  the pentatonic box
-                </li>
-                <li>
-                  <strong>Listen carefully</strong> and try to identify which
-                  note was played
-                </li>
-                <li>
-                  <strong>Click your guess</strong> from the available note
-                  buttons
-                </li>
-                <li>
-                  <strong>Get immediate feedback</strong> - green for correct,
-                  red for incorrect
-                </li>
-                <li>
-                  <strong>Track your progress</strong> with the accuracy
-                  percentage displayed
-                </li>
-              </ul>
+              <p class="note-explanation">
+                <strong>Note:</strong> You can add F# as well to give you a full
+                G major scale. This note is the leading tone in the key of G and
+                creates a strong sense of resolution back to the root note G,
+                making melodies more directional and harmonically rich.
+              </p>
 
-              <h4>Practice Tips:</h4>
-              <ul>
-                <li>
-                  Start by familiarizing yourself with the sound of each note
-                  individually
-                </li>
-                <li>
-                  Pay attention to the relative pitch relationships between
-                  notes
-                </li>
-                <li>
-                  Practice regularly in short sessions to build your ear
-                  gradually
-                </li>
-                <li>
-                  Use this alongside physical practice on your banjo for best
-                  results
-                </li>
-                <li>
-                  <strong>Don't have a banjo with you just now?</strong> Mix
-                  instruments for practice: set the fretboard to "banjo" and the
-                  test to "synth" to hear realistic banjo tones while testing
-                  with clean synthetic notes, or vice versa to challenge your
-                  ear with different timbres
-                </li>
-              </ul>
+              <p class="note-explanation">
+                <strong>Note:</strong> This is not an absolute pitch test,
+                unless you want it to be - the notes will be transposed based on
+                your capo position, so you can practice identifying intervals
+                and scale degrees within the context of your current key. If you
+                want to do absolute pitch testing then deselect the reference
+                note and try to identify the notes without any reference point.
+              </p>
 
-              <h4>Scale Mode: Pentatonic vs Full G Major</h4>
-              <p>
-                Choose between two scale modes to customize your ear training:
+              <p class="note-explanation">
+                <strong>Don't have a banjo with you just now?</strong>
+                At the bottom of the page you can also use the fretboard buttons
+                to play notes with your mouse or touch, and you can mix and
+                match instruments for the tests and fretboard to challenge your
+                ear with different timbres.
               </p>
-              <ul>
-                <li>
-                  <strong>Pentatonic Scale:</strong> The traditional G major
-                  pentatonic (G, A, B, D, E) plus C as a passing tone. This
-                  6-note scale is fundamental to bluegrass banjo and creates a
-                  distinctive, open sound.
-                </li>
-                <li>
-                  <strong>Full G Major Scale:</strong> The complete 7-note major
-                  scale (G, A, B, C, D, E, F#). This includes all the pentatonic
-                  notes plus F# (the leading tone), providing more harmonic
-                  complexity and resolution.
-                </li>
-              </ul>
-              <p>
-                <strong>Key Differences:</strong>
-              </p>
-              <ul>
-                <li>
-                  <strong>Pentatonic</strong> avoids half-steps, creating a more
-                  "safe" and traditional bluegrass sound
-                </li>
-                <li>
-                  <strong>Full Major Scale</strong> includes the F# leading
-                  tone, which creates stronger resolution to G and more
-                  classical harmonic movement
-                </li>
-                <li>
-                  F# adds tension and "pull" toward the root note G, making
-                  melodies more directional
-                </li>
-              </ul>
 
-              <h4>Reference Note Feature</h4>
-              <p>
-                When enabled, each test will automatically play the root note
-                (G) first, followed by the test note. This helps develop
-                <strong>relative pitch</strong> skills by giving you a reference
-                point within the key.
-              </p>
-              <ul>
-                <li>
-                  <strong>With Reference Note:</strong> Tests relative pitch -
-                  your ability to identify scale degrees and intervals within a
-                  musical context
-                </li>
-                <li>
-                  <strong>Without Reference Note:</strong> Tests absolute pitch
-                  - your ability to identify specific pitches without a
-                  reference
-                </li>
-              </ul>
-              <p>
-                <em>Tip:</em> Start with the reference note enabled to learn the
-                relationships between notes, then try disabling it to challenge
-                your absolute pitch recognition.
-              </p>
+              <section class="instructions-callout">
+                <h4>How to Use This Test:</h4>
+                <ul>
+                  <li>
+                    <strong>Fresh tests</strong> the tests persist so if you've
+                    done all twelve then click the "Fresh Tests" button to reset
+                    your progress and start a new set. This allows you to track
+                    your accuracy over time and see how you're improving with
+                    regular practice.
+                  </li>
+                  <li>
+                    <strong>Set your preferences</strong> for scale mode, capo
+                    position, and instrument sound. You can also choose whether
+                    to play a reference note before each test note, which can
+                    help you develop relative pitch skills by giving you a tonal
+                    context for the notes you're identifying. If you want to
+                    avoid note names then deselect the "Show Note Names" option
+                    to hide the labels on the fretboard buttons and focus purely
+                    on the sounds.
+                  </li>
+                  <li>
+                    <strong>Click "Play Note"</strong> in one of the tests to
+                    hear a random note from the pentatonic box, you have twelve
+                    tests available before your progress is reset, so you can
+                    track your accuracy over time. If you have the reference
+                    note enabled, it will play the root note (G) first, followed
+                    by the test note, to help you hear the relationship between
+                    them.
+                  </li>
+                  <li>
+                    <strong>Try and play it</strong> grab your banjo, play the
+                    root note then try and play the note you just heard. If its
+                    not right to your ear then play the scale upwards or
+                    downwards till you do hear it. Go past it if necessary.
+                  </li>
+                  <li>
+                    <strong>Click your guess</strong> from the available note
+                    buttons
+                  </li>
+                  <li>
+                    <strong>Get immediate feedback</strong> - green for correct,
+                    red for incorrect with the correct note highlighted. This
+                    helps reinforce your learning by providing instant feedback
+                    on your answers, allowing you to quickly identify which
+                    notes you recognize well and which ones you need to work on
+                    more. Over time, this immediate feedback loop will help you
+                    internalize the sounds of the notes and improve your ear
+                    training skills more effectively.
+                  </li>
+                  <li>
+                    <strong>Refine</strong> if you got it wrong click play note
+                    again and have another go. I take a deep breath before doing
+                    this.
+                  </li>
+                  <li>
+                    <strong>Theory</strong> when you get it correct it will
+                    display the interval and how it relates to the root note.
+                    This helps you understand the theoretical context of the
+                    notes you're hearing, which can improve your overall musical
+                    understanding and ear training skills.
+                  </li>
+                  <li>
+                    <strong>Track your progress</strong> with the accuracy
+                    percentage displayed
+                  </li>
+                  <li>
+                    <strong>Have a break</strong> do something else for a few
+                    minutes if you start to feel frustrated or fatigued - ear
+                    training is a long-term process and regular short sessions
+                    are more effective than trying to push through for hours at
+                    a time. I like to make a cup of coffee. Although I often
+                    just play a song I know well, hello Cripple Creek.
+                  </li>
+                </ul>
+              </section>
+
+              <section class="instructions-callout">
+                <h4>How can this help</h4>
+                <p>
+                  This exercise is designed to be used with your banjo in hand,
+                  so you can connect the sounds you're hearing with the physical
+                  locations on the fretboard. By practicing regularly, you'll
+                  start to internalize the sound of each note and its
+                  relationship to the others, which will help you learn songs
+                  faster and play by ear more effectively.
+                </p>
+
+                <p>
+                  Although you select the note by the letter name the selector
+                  mimics the banjo fret board layout, so for example the A note
+                  is located on the 2nd fret of the G string, and the E note is
+                  on the 2nd fret of the D string. By associating the sound of
+                  each note with its position on the fretboard, you'll develop a
+                  stronger mental map of the instrument, which is crucial for
+                  improvisation and playing by ear.
+                </p>
+
+                <p>
+                  When you play the test note, try to recall how that note
+                  sounds in relation to the other notes in the scale. For
+                  example, if you hear the A note, think about how it sounds in
+                  relation to the G (root) and B (major third) notes. Over time,
+                  you'll develop a stronger sense of relative pitch, which is
+                  crucial for playing by ear and improvising on the banjo.
+                </p>
+              </section>
+
+              <section class="instructions-callout">
+                <h4>Practice Tips:</h4>
+                <p>
+                  I play the scale a few times first, from the lowest to the
+                  highest test note, to give myself a reference for the sound of
+                  each note. Then I focus on the relationships between the notes
+                  - for example, how the A note sounds in relation to the G, or
+                  how the E note relates to the D. Over time, you'll start to
+                  recognize these relationships more quickly, which will help
+                  you identify intervals by ear when you're playing or listening
+                  to music.
+                </p>
+
+                <p>
+                  I always try and reproduce the sound by selecting the
+                  corresponding note on the banjo. This helps me connect the
+                  sound with the physical location on the fretboard, which is
+                  crucial for developing muscle memory and being able to play by
+                  ear. Even if you don't have a banjo with you, you can use the
+                  fretboard buttons to mimic this process and train your ear to
+                  associate the sounds with their positions on the instrument.
+                </p>
+
+                <p>
+                  I try and think before I play what am I hearing and how does
+                  it relate to the other notes in the scale. I'm more interested
+                  in its purpose than what its actually called - for example, if
+                  I hear the D note, I think about how it works as the 5th of
+                  the G major scale and how it creates a strong resolution back
+                  to the root note G, rather than just thinking "oh that's a D".
+                  This helps me understand the function of each note within the
+                  musical context, which is crucial for improvisation and
+                  playing by ear.
+                </p>
+              </section>
+
+              <section class="instructions-callout">
+                <h4>The Character of Each Note</h4>
+                <p>
+                  Each note in the scale has its own sound and emotional feel,
+                  independent of what it's called. Learning to hear these
+                  qualities — rather than just memorising names — is the key to
+                  playing by ear.
+                </p>
+                <dl class="interval-descriptions">
+                  <dt><abbr title="Root (1st degree)">The home note</abbr></dt>
+                  <dd>
+                    Settled, arrived, at rest. This is the note everything keeps
+                    returning to. When a phrase lands here it feels complete —
+                    there's nowhere left to go.
+                  </dd>
+
+                  <dt><abbr title="Major 2nd">The step away</abbr></dt>
+                  <dd>
+                    One easy step up from home. Bright and light, it moves
+                    forward without creating tension. It's the note that starts
+                    a gentle climb but isn't committed to it yet.
+                  </dd>
+
+                  <dt><abbr title="Major 3rd">The sunshine note</abbr></dt>
+                  <dd>
+                    The note that makes this scale sound <em>major</em>. Warm
+                    and open — when you hear it over a G chord it locks in that
+                    clear, happy quality. This is the note that defines the
+                    character of the key more than any other.
+                  </dd>
+
+                  <dt>
+                    <abbr title="Perfect 4th (passing tone)"
+                      >The passing tone</abbr
+                    >
+                  </dt>
+                  <dd>
+                    Slightly unsettled, this note doesn't like to sit still. In
+                    bluegrass it works as a bridge — moving through on the way
+                    to somewhere more stable rather than landing and staying. It
+                    adds momentum and interest without feeling resolved.
+                  </dd>
+
+                  <dt><abbr title="Perfect 5th">The anchor</abbr></dt>
+                  <dd>
+                    Strong and stable, but not quite home. The second most
+                    restful note in the key — it can sit comfortably in a melody
+                    without demanding to move, yet it still carries a subtle
+                    pull back toward the root. Often works as a midpoint of rest
+                    in a phrase.
+                  </dd>
+
+                  <dt><abbr title="Major 6th">The colour note</abbr></dt>
+                  <dd>
+                    Open and airy with a slightly sweet quality. It lifts a
+                    phrase and adds brightness without tension. Less grounded
+                    than the anchor but less tense than the pull — it often
+                    appears near the top of a run, giving the melody an
+                    expansive feeling.
+                  </dd>
+
+                  <dt>
+                    <abbr title="Major 7th (leading tone)">The pull</abbr>
+                  </dt>
+                  <dd>
+                    The most tense note in the scale. It leans hard toward the
+                    home note and almost demands to resolve upward. Playing this
+                    note and then landing on the root creates one of the
+                    strongest feelings of arrival in the key. Use it
+                    deliberately — it gives melodies direction and finality.
+                  </dd>
+
+                  <dt><abbr title="Octave (8th degree)">Home again</abbr></dt>
+                  <dd>
+                    The same feeling as the root, but brighter and higher — like
+                    arriving back at the same place after a full journey.
+                    Melodies that climb all the way here feel expansive and
+                    complete. It reinforces everything the home note stands for,
+                    just with more energy.
+                  </dd>
+
+                  <dt>
+                    <abbr title="Perfect 4th (below root)"
+                      >The deep anchor</abbr
+                    >
+                  </dt>
+                  <dd>
+                    The same note as the anchor above — D, the 5th of the key —
+                    but heard from below home, a perfect fourth away. That
+                    stable, grounded character carries across registers: it
+                    still feels restful and settled, just weightier and deeper,
+                    with a gentle pull upward toward home.
+                  </dd>
+
+                  <dt>
+                    <abbr title="Minor 3rd below root">The low colour</abbr>
+                  </dt>
+                  <dd>
+                    The same note as the colour note above — E, the 6th of the
+                    key — but a minor third below home. The sweetness is still
+                    recognisable, but sitting this close below the root gives it
+                    more warmth and intimacy. It's an inviting place to approach
+                    home from, with a natural pull upward.
+                  </dd>
+
+                  <dt>
+                    <abbr title="Minor 2nd below root (leading tone)"
+                      >The doorstep</abbr
+                    >
+                  </dt>
+                  <dd>
+                    One half-step below home — so close you can almost feel the
+                    arrival before it happens. Like the pull above, it leans
+                    hard toward the root, but from beneath. Starting or landing
+                    here creates immediate upward tension that almost demands to
+                    resolve to the home note.
+                  </dd>
+                </dl>
+              </section>
             </div>
           </details>
 
-          <div class="instrument-selection">
-            <div class="control-group">
-              <label for="scale-mode-selector">Scale Mode:</label>
-              <select
-                id="scale-mode-selector"
-                onchange="setScaleMode(this.value)"
-                title="Choose between pentatonic (6 notes) or full major scale (7 notes)"
-              >
-                <option value="pentatonic" selected>
-                  Pentatonic Scale (G, A, B, C, D, E)
-                </option>
-                <option value="full-major">Full G Major Scale (+ F#)</option>
-              </select>
-            </div>
-
-            <div class="control-group">
-              <label for="instrument-selector">Instrument:</label>
-              <select
-                id="instrument-selector"
-                onchange="setInstrument(this.value)"
-              >
-                <option value="banjo">Sebastian's Banjo</option>
-                <option value="synth" selected>Synth</option>
-              </select>
-            </div>
-
-            <div class="control-group">
-              <label for="capo-selector">Capo:</label>
-              <select
-                id="capo-selector"
-                onchange="setCapoPosition(parseInt(this.value))"
-              >
-                <option value="0" selected>No Capo</option>
-                <option value="1">1st Fret</option>
-                <option value="2">2nd Fret</option>
-                <option value="3">3rd Fret</option>
-                <option value="4">4th Fret</option>
-                <option value="5">5th Fret</option>
-              </select>
-            </div>
-
-            <div class="control-group">
-              <label for="reference-note-toggle">Reference Note:</label>
-              <input
-                type="checkbox"
-                id="reference-note-toggle"
-                checked
-                onchange="toggleReferenceNote(this.checked)"
-                title="Play a reference note (root of the scale) before each test note"
-              />
-              <label for="reference-note-toggle" class="checkbox-label"
-                >Enable</label
-              >
-            </div>
-
-            <div class="control-group">
-              <label>Progress:</label>
-              <div class="progress-controls">
-                <button
-                  onclick="startFreshSession()"
-                  title="Start a fresh set of tests (clears saved progress)"
-                  class="action-button fresh-button"
-                >
-                  Fresh Tests
-                </button>
-                <span
-                  id="saved-progress-indicator"
-                  class="progress-indicator"
-                ></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="overall-totals">
-            <span id="overall-totals"
+          <div class="session-bar">
+            <button
+              onclick="startFreshSession()"
+              title="Start a fresh set of tests (clears saved progress)"
+              class="action-button fresh-button"
+            >
+              Fresh Tests
+            </button>
+            <span
+              id="saved-progress-indicator"
+              class="progress-indicator"
+            ></span>
+            <span id="overall-totals" class="overall-totals"
               >Total Correct: 0 | Total Incorrect: 0</span
             >
           </div>
+
+          <fieldset class="instrument-selection">
+            <legend>Settings</legend>
+
+            <!-- Scale cluster: scale mode + capo -->
+            <div class="control-cluster">
+              <div class="control-group">
+                <label for="scale-mode-selector">Scale Mode:</label>
+                <select
+                  id="scale-mode-selector"
+                  onchange="setScaleMode(this.value)"
+                  title="Choose between pentatonic (6 notes) or full major scale (7 notes)"
+                >
+                  <option value="pentatonic" selected>
+                    Pentatonic (G, A, B, C, D, E)
+                  </option>
+                  <option value="full-major">Full G Major (+ F#)</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="capo-selector">Capo:</label>
+                <select
+                  id="capo-selector"
+                  onchange="setCapoPosition(parseInt(this.value))"
+                >
+                  <option value="0" selected>No Capo</option>
+                  <option value="1">1st Fret</option>
+                  <option value="2">2nd Fret</option>
+                  <option value="3">3rd Fret</option>
+                  <option value="4">4th Fret</option>
+                  <option value="5">5th Fret</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Playback cluster: instrument + toggles -->
+            <div class="control-cluster">
+              <div class="control-group">
+                <label for="instrument-selector">Instrument:</label>
+                <select
+                  id="instrument-selector"
+                  onchange="setInstrument(this.value)"
+                >
+                  <option value="banjo">Sebastian's Banjo</option>
+                  <option value="synth" selected>Synth</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="reference-note-toggle">Reference Note:</label>
+                <input
+                  type="checkbox"
+                  id="reference-note-toggle"
+                  checked
+                  onchange="toggleReferenceNote(this.checked)"
+                  title="Play a reference note (root of the scale) before each test note"
+                />
+                <label for="reference-note-toggle" class="checkbox-label"
+                  >Enable</label
+                >
+              </div>
+
+              <div class="control-group">
+                <label for="show-note-names-toggle">Note Names:</label>
+                <input
+                  type="checkbox"
+                  id="show-note-names-toggle"
+                  checked
+                  onchange="toggleNoteNames(this.checked)"
+                  title="Show or hide note names on the fretboard"
+                />
+                <label for="show-note-names-toggle" class="checkbox-label"
+                  >Show</label
+                >
+              </div>
+            </div>
+          </fieldset>
 
           <div id="tests-container" class="tests-container">
             <!-- Tests will be generated here -->

@@ -42,6 +42,9 @@ let currentReferenceNote = "G3";
 // Instructions display state
 let showInstructions = true;
 
+// Show note names on fretboard
+let showNoteNames = true;
+
 // Update reference note based on capo position
 function updateReferenceNoteForCapo() {
   currentReferenceNote = transposeNoteForCapo(
@@ -78,6 +81,13 @@ function initializeFromURL() {
     // If instructions parameter is present, it overrides saved state
     showInstructions = instructionsParam !== "false";
     updateInstructionsToggle();
+  }
+
+  // Handle noteNames parameter (overrides saved state)
+  const noteNamesParam = urlParams.get("noteNames");
+  if (noteNamesParam !== null) {
+    showNoteNames = noteNamesParam !== "false";
+    updateNoteNamesToggle();
   }
 }
 
@@ -394,6 +404,51 @@ function toggleReferenceNote(enabled) {
   }
 }
 
+// Apply note names display class to fretboard elements
+function applyNoteNamesDisplay() {
+  const fretboard = document.querySelector(".banjo-fretboard");
+  if (fretboard) {
+    fretboard.classList.toggle("hide-note-names", !showNoteNames);
+  }
+  document.querySelectorAll(".test-fretboard-layout").forEach((layout) => {
+    layout.classList.toggle("hide-note-names", !showNoteNames);
+  });
+}
+
+// Update the note names toggle UI
+function updateNoteNamesToggle() {
+  const toggle = document.getElementById("show-note-names-toggle");
+  if (toggle) {
+    toggle.checked = showNoteNames;
+  }
+  applyNoteNamesDisplay();
+}
+
+// Toggle note names visibility on fretboard
+function toggleNoteNames(enabled) {
+  showNoteNames = enabled;
+
+  // Update URL (remove param when true/default, set to false when hidden)
+  const url = new URL(window.location);
+  if (enabled) {
+    url.searchParams.delete("noteNames");
+  } else {
+    url.searchParams.set("noteNames", "false");
+  }
+  window.history.replaceState(null, "", url);
+
+  applyNoteNamesDisplay();
+  saveStateToStorage();
+
+  if (typeof gtag !== "undefined") {
+    gtag("event", "note_names_toggle", {
+      event_category: "ear_training",
+      event_label: enabled ? "shown" : "hidden",
+      custom_parameter_1: "note_names_visibility",
+    });
+  }
+}
+
 // Set instructions display state
 function setInstructionsDisplay(enabled) {
   showInstructions = enabled;
@@ -440,12 +495,17 @@ function loadStateFromStorage() {
           state.settings.showInstructions !== undefined
             ? state.settings.showInstructions
             : showInstructions;
+        showNoteNames =
+          state.settings.showNoteNames !== undefined
+            ? state.settings.showNoteNames
+            : showNoteNames;
 
         // Update UI selectors
         updateInstrumentSelector();
         updateCapoSelector();
         updateScaleModeSelector();
         updateInstructionsToggle();
+        updateNoteNamesToggle();
 
         // Update collections and reference note
         updatePentatonicCollectionForCapo();
@@ -484,6 +544,7 @@ function saveStateToStorage() {
         scaleMode: currentScaleMode,
         useReferenceNote: useReferenceNote,
         showInstructions: showInstructions,
+        showNoteNames: showNoteNames,
       },
       testCollection: testCollection,
       statistics: {
@@ -659,7 +720,7 @@ function renderTests() {
       
       <div class="test-feedback">
         <span id="status-indicator-${index}" class="status-${test.status}">
-          ${getStatusText(test.status, test.noteRelationship)}
+          ${getStatusText(test.status, test.noteRelationship, test.guessedCorrectly ? test.targetNote : null)}
         </span>
       </div>
       
@@ -674,6 +735,11 @@ function renderTests() {
 
     container.appendChild(testDiv);
   });
+
+  // Re-apply note names display after DOM is rebuilt
+  if (typeof applyNoteNamesDisplay === "function") {
+    applyNoteNamesDisplay();
+  }
 }
 
 function createPentatonicTestLayout(testIndex, test) {
@@ -931,7 +997,18 @@ const INTERVAL_NAMES = [
 
 function getNoteInterval(testNote, rootNote) {
   const chromaticScale = [
-    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+    "C",
+    "C#",
+    "D",
+    "D#",
+    "E",
+    "F",
+    "F#",
+    "G",
+    "G#",
+    "A",
+    "A#",
+    "B",
   ];
   const noteRegex = /([A-G][#b]?)([0-9]+)/;
   const rootMatch = rootNote.match(noteRegex);
@@ -944,15 +1021,21 @@ function getNoteInterval(testNote, rootNote) {
 
   const semitones = (testIndex - rootIndex + 12) % 12;
   if (semitones === 0) {
-    return parseInt(testMatch[2]) === parseInt(rootMatch[2]) ? "Unison" : "Octave";
+    return parseInt(testMatch[2]) === parseInt(rootMatch[2])
+      ? "Unison"
+      : "Octave";
   }
   return INTERVAL_NAMES[semitones];
 }
 
-function getStatusText(status, noteRelationship) {
+function getStatusText(status, noteRelationship, targetNote) {
   switch (status) {
-    case "correct":
-      return noteRelationship ? `Correct! (${noteRelationship})` : "Correct!";
+    case "correct": {
+      const parts = [];
+      if (targetNote) parts.push(targetNote);
+      if (noteRelationship) parts.push(noteRelationship);
+      return parts.length > 0 ? `Correct! (${parts.join(" — ")})` : "Correct!";
+    }
     case "incorrect":
       return "Incorrect";
     case "not-tried":

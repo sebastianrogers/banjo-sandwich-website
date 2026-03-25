@@ -920,6 +920,24 @@ footer {
   opacity: 0.8;
 }
 
+/* Hide note names on fretboard — main visual fretboard */
+.banjo-fretboard.hide-note-names .note-btn {
+  color: transparent;
+}
+.banjo-fretboard.hide-note-names .note-btn:hover {
+  color: transparent;
+}
+
+/* Hide note names on fretboard — test layout buttons (reveal on answered) */
+.test-fretboard-layout.hide-note-names
+  .test-note-btn-fretboard:not(.btn-correct):not(.btn-incorrect) {
+  color: transparent;
+}
+.test-fretboard-layout.hide-note-names
+  .test-note-btn-fretboard:not(.btn-correct):not(.btn-incorrect):hover {
+  color: transparent;
+}
+
 .test-legend {
   display: flex;
   justify-content: center;
@@ -1002,17 +1020,41 @@ footer {
    ------------------------------------------------------------- */
 
 .instrument-selection {
-  text-align: center;
-  margin: 20px 0;
-  padding: 15px;
-  background-color: #f8f9fa;
+  /* Reset fieldset browser defaults */
   border: 1px solid #dee2e6;
+  min-width: 0;
+
+  margin: 20px 0;
+  padding: 12px 20px 16px;
+  background-color: #f8f9fa;
   border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;
+  gap: 0;
   flex-wrap: wrap;
+}
+
+.instrument-selection legend {
+  padding: 0 10px;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8b4513;
+}
+
+.control-cluster {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 4px 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.control-cluster + .control-cluster {
+  border-left: 1px solid #dee2e6;
 }
 
 .fretboard-instrument-selection {
@@ -1053,11 +1095,12 @@ footer {
   accent-color: #8b4513;
 }
 
-/* Session progress controls (reset / fresh start) */
-.progress-controls {
+/* Session bar — Fresh Tests button + progress indicator, sits above settings */
+.session-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  margin: 16px 0 8px;
 }
 
 .action-button {
@@ -1156,7 +1199,13 @@ footer {
 @media (max-width: 768px) {
   .instrument-selection {
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
+  }
+
+  .control-cluster + .control-cluster {
+    border-left: none;
+    border-top: 1px solid #dee2e6;
+    padding: 12px 0 0;
   }
 
   .fretboard-instrument-selection {
@@ -1166,9 +1215,8 @@ footer {
 }
 
 .overall-totals {
-  text-align: center;
-  margin: 20px 0;
-  font-size: 18px;
+  margin-left: auto;
+  font-size: 15px;
   font-weight: bold;
   color: #8b4513;
 }
@@ -1552,4 +1600,45 @@ footer {
   font-size: 0.95em;
   opacity: 0.8;
   margin-top: 10px;
+}
+
+.note-explanation {
+  border-left: 3px solid #dee2e6;
+  padding-left: 0.85rem;
+  color: #555;
+  font-size: 0.95em;
+  margin: 1.1rem 0;
+}
+
+.instructions-callout {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background-color: #eef4fb;
+  border-radius: 6px;
+  border: 1px solid #c9ddf0;
+}
+
+.instructions-callout p + p {
+  margin-top: 0.75rem;
+}
+
+.interval-descriptions {
+  margin: 0.75rem 0 0;
+}
+
+.interval-descriptions dt {
+  font-weight: 600;
+  color: #2c5282;
+  margin-top: 0.85rem;
+}
+
+.interval-descriptions dt abbr {
+  text-decoration: underline dotted currentColor;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+
+.interval-descriptions dd {
+  margin: 0.2rem 0 0 1rem;
+  line-height: 1.55;
 }
